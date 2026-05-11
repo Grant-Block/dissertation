@@ -1,0 +1,68 @@
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+playback 'geometry.jou'
+
+#define cell sizes
+${maxCellSize=20.0*km}
+${minCellSize=1.0*km}
+${CRCellSize=5.0*km}
+# ----------------------------------------------------------------------
+# Create tet4 mesh with resolution dictated by 'cell_size_fn'.
+# ----------------------------------------------------------------------
+volume all scheme tetmesh
+import sizing function  "temp_mesh.exo" block all variable "cell_size_fn" time 0.0000000 
+
+surface 1 sizing function type exodus
+surface 2 size {maxCellSize}
+
+surface 3, 4, 5, 6 size {maxCellSize}
+
+surface 7, 8, 9, 10, 11, 12, 13, 14 size {minCellSize}
+
+
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+mesh surface all
+mesh volume all
+
+# ----------------------------------------------------------------------
+# Smooth mesh to improve quality
+# ----------------------------------------------------------------------
+volume all smooth scheme condition number beta 1.8 cpu 10
+surface all smooth scheme condition number beta 1.8 cpu 10
+
+smooth volume all
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

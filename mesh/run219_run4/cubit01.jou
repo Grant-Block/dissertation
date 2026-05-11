@@ -1,0 +1,3396 @@
+## /opt/Trelis-16.1/bin/trelis
+## Trelis Version 16.1.1
+## Trelis Build 1b15f60
+## Revised Tue Aug 23 16:17:41 2016 -0600
+## Running 03/31/2026 02:31:51 PM
+## Command Options:
+reset
+undo off
+cd "/home/grantblock/Research/Yellowstone/Mesh/nested_CR/run230"
+# ----------------------------------------------------------------------
+# Set units to SI
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Set  geometry parameters
+# ----------------------------------------------------------------------
+${CR_depth=4.0*km}
+${inner_CR_depth=5.5*km}
+${source_depth=5.0*km}
+#source and CR parameters
+${base_CR_x_rad = 13.0*km}
+${base_CR_y_rad = 27.5*km}
+${base_CR_z_rad = 2.5*km}
+${CR_x_rad = base_CR_x_rad}
+${CR_y_rad = base_CR_y_rad}
+${CR_height = 26.0*km}
+${inner_CR_x_rad = 0.6*base_CR_x_rad}
+${inner_CR_y_rad = 0.6*base_CR_y_rad}
+${inner_CR_height = 19.0*km}
+${source_x_rad=0.25*base_CR_x_rad}
+${source_y_rad=0.250*base_CR_y_rad}
+${source_z_rad=0.25*base_CR_z_rad}
+${source_x_shift = 0.0*km}
+${source_y_shift = 0.0*km}
+${CR_x_shift =0.0*km}
+${CR_y_shift = 0.0*km}
+# Domain size parameters
+${sizeX=200.0*km}
+${sizeY=200.0*km}
+${sizeZ=100.0*km}
+${upperCrustHeight=5*km}
+${lowerCrustHeight=45*km}
+${lithosphericMantleHeight=50*km}
+#${asthenosphereHeight=100*km}
+#------------------------------------------------------------------------
+# Create ellipsoidal magma chamber
+#------------------------------------------------------------------------
+create vertex 0 0 0
+create vertex 0 -6875 0
+create vertex 0 0 -625
+create vertex -3250 0 0
+curve 1 copy reflect z
+curve 2 copy reflect z
+create curve vertex 3 7
+create surface curve 3 4 6
+create surface curve 1 2 6
+merge all
+body 1 copy reflect x
+body 2 copy reflect x
+body 1 copy reflect y
+body 3 copy reflect y
+body 2 copy reflect y
+body 4 copy reflect y
+create volume surface 1 2 3 4 5 6 7 8 heal
+delete vertex 1
+delete curve 5
+compress all
+# Move out of the way
+volume 1 move x {source_x_shift} y {source_y_shift} z {source_depth}
+#----------------------------------------------------------------------------
+# Create the domain, a block with a large ellipsoidal
+# CR
+#----------------------------------------------------------------------------
+# create the CR eliptical prism
+create vertex 0 0 0
+create vertex 0 -27500 0
+create vertex -13000 0 0
+curve 13 copy reflect y
+curve 13 copy reflect x
+curve 14 copy reflect x
+create surface curve 13 14 15 16
+delete vertex 7
+sweep surface 9 direction 0 0 1 distance -26000
+# Move out of the way
+volume 2 move x {CR_x_shift} y {CR_y_shift} z {3*source_depth}
+# create the inner CR elliptical prism
+create vertex 0 0 0
+create vertex 0 -16500 0
+create vertex -7800 0 0
+curve 25 copy reflect y
+curve 25 copy reflect x
+curve 26 copy reflect x
+create surface curve 25 26 27 28
+delete vertex 20
+sweep surface 15 direction 0 0 1 distance -19000
+volume 3 move x 0 y 0 z {3*source_depth}
+create brick x {sizeX} y {sizeY} z {sizeZ}
+volume 4 move x 0 y 0 z {-0.5*sizeZ}
+#move volumes back and subtract
+volume 2 move copy x 0 y 0 z {-3*source_depth-CR_depth/2}
+subtract volume 5 from 4
+volume 2 move x 0 y 0 z {-3*source_depth-CR_depth/2}
+volume 3 move copy x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+subtract volume 7 from 2
+volume 3 move x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+volume 1 move x 0 y 0 z {-2*source_depth}
+subtract volume 1 from 3
+merge all
+compress all
+#cut domain into layers
+webcut volume 1 with plane zplane offset {-upperCrustHeight}
+imprint volume 1 with volume 2
+webcut volume 4 with plane zplane offset {-upperCrustHeight-lowerCrustHeight}
+merge all
+compress all
+list volume 3 geometry
+reset
+undo off
+reset
+undo off
+cd "/home/grantblock/Research/Yellowstone/Mesh/nested_CR/run230"
+# ----------------------------------------------------------------------
+# Set units to SI
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Set  geometry parameters
+# ----------------------------------------------------------------------
+${CR_depth=4.0*km}
+${inner_CR_depth=5.5*km}
+${source_depth=5.0*km}
+#source and CR parameters
+${base_CR_x_rad = 13.0*km}
+${base_CR_y_rad = 27.5*km}
+${base_CR_z_rad = 2.5*km}
+${CR_x_rad = base_CR_x_rad}
+${CR_y_rad = base_CR_y_rad}
+${CR_height = 26.0*km}
+${inner_CR_x_rad = 0.6*base_CR_x_rad}
+${inner_CR_y_rad = 0.6*base_CR_y_rad}
+${inner_CR_height = 19.0*km}
+${source_x_rad=0.25*base_CR_x_rad}
+${source_y_rad=0.250*base_CR_y_rad}
+${source_z_rad=0.25*base_CR_z_rad}
+${source_x_shift = 0.0*km}
+${source_y_shift = 0.0*km}
+${CR_x_shift =0.0*km}
+${CR_y_shift = 0.0*km}
+# Domain size parameters
+${sizeX=200.0*km}
+${sizeY=200.0*km}
+${sizeZ=100.0*km}
+${upperCrustHeight=5*km}
+${lowerCrustHeight=45*km}
+${lithosphericMantleHeight=50*km}
+#${asthenosphereHeight=100*km}
+#------------------------------------------------------------------------
+# Create ellipsoidal magma chamber
+#------------------------------------------------------------------------
+create vertex 0 0 0
+create vertex 0 -6875 0
+create vertex 0 0 -625
+create vertex -3250 0 0
+curve 1 copy reflect z
+curve 2 copy reflect z
+create curve vertex 3 7
+create surface curve 3 4 6
+create surface curve 1 2 6
+merge all
+body 1 copy reflect x
+body 2 copy reflect x
+body 1 copy reflect y
+body 3 copy reflect y
+body 2 copy reflect y
+body 4 copy reflect y
+create volume surface 1 2 3 4 5 6 7 8 heal
+delete vertex 1
+delete curve 5
+compress all
+# Move out of the way
+volume 1 move x {source_x_shift} y {source_y_shift} z {source_depth}
+#----------------------------------------------------------------------------
+# Create the domain, a block with a large ellipsoidal
+# CR
+#----------------------------------------------------------------------------
+# create the CR eliptical prism
+create vertex 0 0 0
+create vertex 0 -27500 0
+create vertex -13000 0 0
+curve 13 copy reflect y
+curve 13 copy reflect x
+curve 14 copy reflect x
+create surface curve 13 14 15 16
+delete vertex 7
+sweep surface 9 direction 0 0 1 distance -26000
+# Move out of the way
+volume 2 move x {CR_x_shift} y {CR_y_shift} z {3*source_depth}
+# create the inner CR elliptical prism
+create vertex 0 0 0
+create vertex 0 -16500 0
+create vertex -7800 0 0
+curve 25 copy reflect y
+curve 25 copy reflect x
+curve 26 copy reflect x
+create surface curve 25 26 27 28
+delete vertex 20
+sweep surface 15 direction 0 0 1 distance -19000
+volume 3 move x 0 y 0 z {3*source_depth}
+create brick x {sizeX} y {sizeY} z {sizeZ}
+volume 4 move x 0 y 0 z {-0.5*sizeZ}
+#move volumes back and subtract
+volume 2 move copy x 0 y 0 z {-3*source_depth-CR_depth/2}
+subtract volume 5 from 4
+volume 2 move x 0 y 0 z {-3*source_depth-CR_depth/2}
+volume 3 move copy x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+subtract volume 7 from 2
+volume 3 move x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+volume 1 move x 0 y 0 z {-2*source_depth}
+subtract volume 1 from 3
+merge all
+compress all
+#cut domain into layers
+webcut volume 1 with plane zplane offset {-upperCrustHeight}
+imprint volume 1 with volume 2
+webcut volume 4 with plane zplane offset {-upperCrustHeight-lowerCrustHeight}
+merge all
+compress all
+#---------------------------------------------------------------------------
+# Set element sizes and mesh the geometry
+#---------------------------------------------------------------------------
+${maxCellSize=20.0*km}
+volume all size {maxCellSize}
+volume all scheme tetmesh
+mesh surface all
+mesh volume all
+#Export temp exodus file
+set large exodus file off
+block 1 volume all
+export mesh "temp_mesh.exo" dimension 3 overwrite
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+reset
+undo off
+cd "/home/grantblock/Research/Yellowstone/Mesh/nested_CR/run230"
+# ----------------------------------------------------------------------
+# Set units to SI
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Set  geometry parameters
+# ----------------------------------------------------------------------
+${CR_depth=4.0*km}
+${inner_CR_depth=5.5*km}
+${source_depth=5.0*km}
+#source and CR parameters
+${base_CR_x_rad = 13.0*km}
+${base_CR_y_rad = 27.5*km}
+${base_CR_z_rad = 2.5*km}
+${CR_x_rad = base_CR_x_rad}
+${CR_y_rad = base_CR_y_rad}
+${CR_height = 26.0*km}
+${inner_CR_x_rad = 0.6*base_CR_x_rad}
+${inner_CR_y_rad = 0.6*base_CR_y_rad}
+${inner_CR_height = 19.0*km}
+${source_x_rad=0.25*base_CR_x_rad}
+${source_y_rad=0.250*base_CR_y_rad}
+${source_z_rad=0.25*base_CR_z_rad}
+${source_x_shift = 0.0*km}
+${source_y_shift = 0.0*km}
+${CR_x_shift =0.0*km}
+${CR_y_shift = 0.0*km}
+# Domain size parameters
+${sizeX=200.0*km}
+${sizeY=200.0*km}
+${sizeZ=100.0*km}
+${upperCrustHeight=5*km}
+${lowerCrustHeight=45*km}
+${lithosphericMantleHeight=50*km}
+#${asthenosphereHeight=100*km}
+#------------------------------------------------------------------------
+# Create ellipsoidal magma chamber
+#------------------------------------------------------------------------
+create vertex 0 0 0
+create vertex 0 -6875 0
+create vertex 0 0 -625
+create vertex -3250 0 0
+curve 1 copy reflect z
+curve 2 copy reflect z
+create curve vertex 3 7
+create surface curve 3 4 6
+create surface curve 1 2 6
+merge all
+body 1 copy reflect x
+body 2 copy reflect x
+body 1 copy reflect y
+body 3 copy reflect y
+body 2 copy reflect y
+body 4 copy reflect y
+create volume surface 1 2 3 4 5 6 7 8 heal
+delete vertex 1
+delete curve 5
+compress all
+# Move out of the way
+volume 1 move x {source_x_shift} y {source_y_shift} z {source_depth}
+#----------------------------------------------------------------------------
+# Create the domain, a block with a large ellipsoidal
+# CR
+#----------------------------------------------------------------------------
+# create the CR eliptical prism
+create vertex 0 0 0
+create vertex 0 -27500 0
+create vertex -13000 0 0
+curve 13 copy reflect y
+curve 13 copy reflect x
+curve 14 copy reflect x
+create surface curve 13 14 15 16
+delete vertex 7
+sweep surface 9 direction 0 0 1 distance -26000
+# Move out of the way
+volume 2 move x {CR_x_shift} y {CR_y_shift} z {3*source_depth}
+# create the inner CR elliptical prism
+create vertex 0 0 0
+create vertex 0 -16500 0
+create vertex -7800 0 0
+curve 25 copy reflect y
+curve 25 copy reflect x
+curve 26 copy reflect x
+create surface curve 25 26 27 28
+delete vertex 20
+sweep surface 15 direction 0 0 1 distance -19000
+volume 3 move x 0 y 0 z {3*source_depth}
+create brick x {sizeX} y {sizeY} z {sizeZ}
+volume 4 move x 0 y 0 z {-0.5*sizeZ}
+#move volumes back and subtract
+volume 2 move copy x 0 y 0 z {-3*source_depth-CR_depth/2}
+subtract volume 5 from 4
+volume 2 move x 0 y 0 z {-3*source_depth-CR_depth/2}
+volume 3 move copy x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+subtract volume 7 from 2
+volume 3 move x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+volume 1 move x 0 y 0 z {-2*source_depth}
+subtract volume 1 from 3
+merge all
+compress all
+#cut domain into layers
+webcut volume 1 with plane zplane offset {-upperCrustHeight}
+imprint volume 1 with volume 2
+webcut volume 4 with plane zplane offset {-upperCrustHeight-lowerCrustHeight}
+merge all
+compress all
+#define cell sizes
+${maxCellSize=20.0*km}
+${minCellSize=1.0*km}
+${CRCellSize=5.0*km}
+# ----------------------------------------------------------------------
+# Create tet4 mesh with resolution dictated by 'cell_size_fn'.
+# ----------------------------------------------------------------------
+volume all scheme tetmesh
+import sizing function "temp_mesh.exo" block all variable "cell_size_fn" time 0
+surface 1 size {CRCellSize}
+surface 2 size {CRCellSize}
+surface 3 size {CRCellSize}
+surface 4 size {CRCellSize}
+surface 5 size {CRCellSize}
+surface 6 size {CRCellSize}
+surface 7 size {CRCellSize}
+surface 8 size {CRCellSize}
+surface 9 sizing function type exodus
+surface 10 size {maxCellSize}
+surface 11 size {minCellSize}
+surface 12 size {minCellSize}
+surface 13 size {minCellSize}
+surface 14 size {minCellSize}
+surface 15 size {minCellSize}
+surface 16 size {minCellSize}
+surface 17 size {minCellSize}
+surface 18 size {minCellSize}
+surface 19 sizing function type exodus
+surface 20 size {CRCellSize}
+surface 21 size {CRCellSize}
+surface 22 size {CRCellSize}
+surface 23 size {CRCellSize}
+surface 24 size {maxCellSize}
+surface 25 size {maxCellSize}
+surface 26 size {maxCellSize}
+surface 27 size {maxCellSize}
+surface 28 size {CRCellSize}
+surface 29 size {CRCellSize}
+surface 30 size {CRCellSize}
+surface 31 size {CRCellSize}
+surface 33 size {maxCellSize}
+surface 34 size {maxCellSize}
+surface 35 size {maxCellSize}
+surface 36 size {maxCellSize}
+surface 37 size {maxCellSize}
+surface 38 size {maxCellSize}
+surface 39 size {maxCellSize}
+surface 40 size {maxCellSize}
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+mesh surface all
+mesh volume all
+# ----------------------------------------------------------------------
+# Smooth mesh to improve quality
+# ----------------------------------------------------------------------
+volume all smooth scheme condition number beta 1.8 cpu 10
+surface all smooth scheme condition number beta 1.8 cpu 10
+smooth volume all
+# ----------------------------------------------------------------------------------------------
+# Create Boundary Conditions
+#----------------------------------------------------------------------------------------------
+#Create blocks for materials
+block 1 volume 1
+block 1 name "upperCrust"
+block 2 volume 4
+block 2 name "lowerCrust"
+block 3 volume 3
+block 3 name "viscoelasticCylinder"
+block 4 volume 5
+block 4 name "lithosphericMantle"
+block 5 volume 2
+block 5 name "outerCR"
+merge all
+compress all
+# Chamber nodesets
+group "chamber_top" add node in surface 11 13 15 16
+nodeset 1 chamber_top
+nodeset 1 name "chamber_top"
+group "chamber_bot" add node in surface 12 14 17 18
+nodeset 2 chamber_bot
+nodeset 2 name "chamber_bot"
+# +x face nodeset
+group "face_xpos" add node in surface 27 35 38
+nodeset 3 face_xpos
+nodeset 3 name "face_xpos"
+# -x face nodeset
+group "face_xneg" add node in surface 25 33 40
+nodeset 4 face_xneg
+nodeset 4 name "face_xneg"
+# +y face nodeset
+group "face_ypos" add node in surface 24 36 37
+nodeset 5 face_ypos
+nodeset 5 name "face_ypos"
+# -y face nodeset
+group "face_yneg" add node in surface 26 34 39
+nodeset 6 face_yneg
+nodeset 6 name "face_yneg"
+# +z face nodeset
+group "face_zpos" add node in surface 9
+nodeset 7 face_zpos
+nodeset 7 name "face_zpos"
+# -z face nodeset
+group "face_zneg" add node in surface 10
+nodeset 8 face_zneg
+nodeset 8 name "face_zneg"
+export mesh "run230.exo" dimension 3 overwrite
+reset
+undo off
+cd "/home/grantblock/Research/Yellowstone/Mesh/nested_CR/run230_run2"
+# ----------------------------------------------------------------------
+# Set units to SI
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Set  geometry parameters
+# ----------------------------------------------------------------------
+${CR_depth=4.0*km}
+${inner_CR_depth=5.5*km}
+${source_depth=5.0*km}
+#source and CR parameters
+${base_CR_x_rad = 13.0*km}
+${base_CR_y_rad = 27.5*km}
+${base_CR_z_rad = 2.5*km}
+${CR_x_rad = base_CR_x_rad}
+${CR_y_rad = base_CR_y_rad}
+${CR_height = 26.0*km}
+${inner_CR_x_rad = 0.9*base_CR_x_rad}
+${inner_CR_y_rad = 0.9*base_CR_y_rad}
+${inner_CR_height = 19.0*km}
+${source_x_rad=0.25*base_CR_x_rad}
+${source_y_rad=0.25*base_CR_y_rad}
+${source_z_rad=0.25*base_CR_z_rad}
+${source_x_shift = 0.0*km}
+${source_y_shift = 0.0*km}
+${CR_x_shift =0.0*km}
+${CR_y_shift = 0.0*km}
+# Domain size parameters
+${sizeX=200.0*km}
+${sizeY=200.0*km}
+${sizeZ=100.0*km}
+${upperCrustHeight=5*km}
+${lowerCrustHeight=45*km}
+${lithosphericMantleHeight=50*km}
+#${asthenosphereHeight=100*km}
+#------------------------------------------------------------------------
+# Create ellipsoidal magma chamber
+#------------------------------------------------------------------------
+create vertex 0 0 0
+create vertex 0 -6875 0
+create vertex 0 0 -625
+create vertex -3250 0 0
+curve 1 copy reflect z
+curve 2 copy reflect z
+create curve vertex 3 7
+create surface curve 3 4 6
+create surface curve 1 2 6
+merge all
+body 1 copy reflect x
+body 2 copy reflect x
+body 1 copy reflect y
+body 3 copy reflect y
+body 2 copy reflect y
+body 4 copy reflect y
+create volume surface 1 2 3 4 5 6 7 8 heal
+delete vertex 1
+delete curve 5
+compress all
+# Move out of the way
+volume 1 move x {source_x_shift} y {source_y_shift} z {source_depth}
+#----------------------------------------------------------------------------
+# Create the domain, a block with a large ellipsoidal
+# CR
+#----------------------------------------------------------------------------
+# create the CR eliptical prism
+create vertex 0 0 0
+create vertex 0 -27500 0
+create vertex -13000 0 0
+curve 13 copy reflect y
+curve 13 copy reflect x
+curve 14 copy reflect x
+create surface curve 13 14 15 16
+delete vertex 7
+sweep surface 9 direction 0 0 1 distance -26000
+# Move out of the way
+volume 2 move x {CR_x_shift} y {CR_y_shift} z {3*source_depth}
+# create the inner CR elliptical prism
+create vertex 0 0 0
+create vertex 0 -24750 0
+create vertex -11700 0 0
+curve 25 copy reflect y
+curve 25 copy reflect x
+curve 26 copy reflect x
+create surface curve 25 26 27 28
+delete vertex 20
+sweep surface 15 direction 0 0 1 distance -19000
+volume 3 move x 0 y 0 z {3*source_depth}
+create brick x {sizeX} y {sizeY} z {sizeZ}
+volume 4 move x 0 y 0 z {-0.5*sizeZ}
+#move volumes back and subtract
+volume 2 move copy x 0 y 0 z {-3*source_depth-CR_depth/2}
+subtract volume 5 from 4
+volume 2 move x 0 y 0 z {-3*source_depth-CR_depth/2}
+volume 3 move copy x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+subtract volume 7 from 2
+volume 3 move x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+volume 1 move x 0 y 0 z {-2*source_depth}
+subtract volume 1 from 3
+merge all
+compress all
+#cut domain into layers
+webcut volume 1 with plane zplane offset {-upperCrustHeight}
+imprint volume 1 with volume 2
+webcut volume 4 with plane zplane offset {-upperCrustHeight-lowerCrustHeight}
+merge all
+compress all
+reset
+undo off
+reset
+undo off
+cd "/home/grantblock/Research/Yellowstone/Mesh/nested_CR/run230_run2"
+# ----------------------------------------------------------------------
+# Set units to SI
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Set  geometry parameters
+# ----------------------------------------------------------------------
+${CR_depth=4.0*km}
+${inner_CR_depth=5.5*km}
+${source_depth=5.0*km}
+#source and CR parameters
+${base_CR_x_rad = 13.0*km}
+${base_CR_y_rad = 27.5*km}
+${base_CR_z_rad = 2.5*km}
+${CR_x_rad = base_CR_x_rad}
+${CR_y_rad = base_CR_y_rad}
+${CR_height = 26.0*km}
+${inner_CR_x_rad = 0.9*base_CR_x_rad}
+${inner_CR_y_rad = 0.9*base_CR_y_rad}
+${inner_CR_height = 19.0*km}
+${source_x_rad=0.25*base_CR_x_rad}
+${source_y_rad=0.25*base_CR_y_rad}
+${source_z_rad=0.25*base_CR_z_rad}
+${source_x_shift = 0.0*km}
+${source_y_shift = 0.0*km}
+${CR_x_shift =0.0*km}
+${CR_y_shift = 0.0*km}
+# Domain size parameters
+${sizeX=200.0*km}
+${sizeY=200.0*km}
+${sizeZ=100.0*km}
+${upperCrustHeight=5*km}
+${lowerCrustHeight=45*km}
+${lithosphericMantleHeight=50*km}
+#${asthenosphereHeight=100*km}
+#------------------------------------------------------------------------
+# Create ellipsoidal magma chamber
+#------------------------------------------------------------------------
+create vertex 0 0 0
+create vertex 0 -6875 0
+create vertex 0 0 -625
+create vertex -3250 0 0
+curve 1 copy reflect z
+curve 2 copy reflect z
+create curve vertex 3 7
+create surface curve 3 4 6
+create surface curve 1 2 6
+merge all
+body 1 copy reflect x
+body 2 copy reflect x
+body 1 copy reflect y
+body 3 copy reflect y
+body 2 copy reflect y
+body 4 copy reflect y
+create volume surface 1 2 3 4 5 6 7 8 heal
+delete vertex 1
+delete curve 5
+compress all
+# Move out of the way
+volume 1 move x {source_x_shift} y {source_y_shift} z {source_depth}
+#----------------------------------------------------------------------------
+# Create the domain, a block with a large ellipsoidal
+# CR
+#----------------------------------------------------------------------------
+# create the CR eliptical prism
+create vertex 0 0 0
+create vertex 0 -27500 0
+create vertex -13000 0 0
+curve 13 copy reflect y
+curve 13 copy reflect x
+curve 14 copy reflect x
+create surface curve 13 14 15 16
+delete vertex 7
+sweep surface 9 direction 0 0 1 distance -26000
+# Move out of the way
+volume 2 move x {CR_x_shift} y {CR_y_shift} z {3*source_depth}
+# create the inner CR elliptical prism
+create vertex 0 0 0
+create vertex 0 -24750 0
+create vertex -11700 0 0
+curve 25 copy reflect y
+curve 25 copy reflect x
+curve 26 copy reflect x
+create surface curve 25 26 27 28
+delete vertex 20
+sweep surface 15 direction 0 0 1 distance -19000
+volume 3 move x 0 y 0 z {3*source_depth}
+create brick x {sizeX} y {sizeY} z {sizeZ}
+volume 4 move x 0 y 0 z {-0.5*sizeZ}
+#move volumes back and subtract
+volume 2 move copy x 0 y 0 z {-3*source_depth-CR_depth/2}
+subtract volume 5 from 4
+volume 2 move x 0 y 0 z {-3*source_depth-CR_depth/2}
+volume 3 move copy x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+subtract volume 7 from 2
+volume 3 move x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+volume 1 move x 0 y 0 z {-2*source_depth}
+subtract volume 1 from 3
+merge all
+compress all
+#cut domain into layers
+webcut volume 1 with plane zplane offset {-upperCrustHeight}
+imprint volume 1 with volume 2
+webcut volume 4 with plane zplane offset {-upperCrustHeight-lowerCrustHeight}
+merge all
+compress all
+#---------------------------------------------------------------------------
+# Set element sizes and mesh the geometry
+#---------------------------------------------------------------------------
+${maxCellSize=20.0*km}
+volume all size {maxCellSize}
+volume all scheme tetmesh
+mesh surface all
+mesh volume all
+#Export temp exodus file
+set large exodus file off
+block 1 volume all
+export mesh "temp_mesh.exo" dimension 3 overwrite
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+reset
+undo off
+cd "/home/grantblock/Research/Yellowstone/Mesh/nested_CR/run230_run2"
+# ----------------------------------------------------------------------
+# Set units to SI
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Set  geometry parameters
+# ----------------------------------------------------------------------
+${CR_depth=4.0*km}
+${inner_CR_depth=5.5*km}
+${source_depth=5.0*km}
+#source and CR parameters
+${base_CR_x_rad = 13.0*km}
+${base_CR_y_rad = 27.5*km}
+${base_CR_z_rad = 2.5*km}
+${CR_x_rad = base_CR_x_rad}
+${CR_y_rad = base_CR_y_rad}
+${CR_height = 26.0*km}
+${inner_CR_x_rad = 0.9*base_CR_x_rad}
+${inner_CR_y_rad = 0.9*base_CR_y_rad}
+${inner_CR_height = 19.0*km}
+${source_x_rad=0.25*base_CR_x_rad}
+${source_y_rad=0.25*base_CR_y_rad}
+${source_z_rad=0.25*base_CR_z_rad}
+${source_x_shift = 0.0*km}
+${source_y_shift = 0.0*km}
+${CR_x_shift =0.0*km}
+${CR_y_shift = 0.0*km}
+# Domain size parameters
+${sizeX=200.0*km}
+${sizeY=200.0*km}
+${sizeZ=100.0*km}
+${upperCrustHeight=5*km}
+${lowerCrustHeight=45*km}
+${lithosphericMantleHeight=50*km}
+#${asthenosphereHeight=100*km}
+#------------------------------------------------------------------------
+# Create ellipsoidal magma chamber
+#------------------------------------------------------------------------
+create vertex 0 0 0
+create vertex 0 -6875 0
+create vertex 0 0 -625
+create vertex -3250 0 0
+curve 1 copy reflect z
+curve 2 copy reflect z
+create curve vertex 3 7
+create surface curve 3 4 6
+create surface curve 1 2 6
+merge all
+body 1 copy reflect x
+body 2 copy reflect x
+body 1 copy reflect y
+body 3 copy reflect y
+body 2 copy reflect y
+body 4 copy reflect y
+create volume surface 1 2 3 4 5 6 7 8 heal
+delete vertex 1
+delete curve 5
+compress all
+# Move out of the way
+volume 1 move x {source_x_shift} y {source_y_shift} z {source_depth}
+#----------------------------------------------------------------------------
+# Create the domain, a block with a large ellipsoidal
+# CR
+#----------------------------------------------------------------------------
+# create the CR eliptical prism
+create vertex 0 0 0
+create vertex 0 -27500 0
+create vertex -13000 0 0
+curve 13 copy reflect y
+curve 13 copy reflect x
+curve 14 copy reflect x
+create surface curve 13 14 15 16
+delete vertex 7
+sweep surface 9 direction 0 0 1 distance -26000
+# Move out of the way
+volume 2 move x {CR_x_shift} y {CR_y_shift} z {3*source_depth}
+# create the inner CR elliptical prism
+create vertex 0 0 0
+create vertex 0 -24750 0
+create vertex -11700 0 0
+curve 25 copy reflect y
+curve 25 copy reflect x
+curve 26 copy reflect x
+create surface curve 25 26 27 28
+delete vertex 20
+sweep surface 15 direction 0 0 1 distance -19000
+volume 3 move x 0 y 0 z {3*source_depth}
+create brick x {sizeX} y {sizeY} z {sizeZ}
+volume 4 move x 0 y 0 z {-0.5*sizeZ}
+#move volumes back and subtract
+volume 2 move copy x 0 y 0 z {-3*source_depth-CR_depth/2}
+subtract volume 5 from 4
+volume 2 move x 0 y 0 z {-3*source_depth-CR_depth/2}
+volume 3 move copy x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+subtract volume 7 from 2
+volume 3 move x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+volume 1 move x 0 y 0 z {-2*source_depth}
+subtract volume 1 from 3
+merge all
+compress all
+#cut domain into layers
+webcut volume 1 with plane zplane offset {-upperCrustHeight}
+imprint volume 1 with volume 2
+webcut volume 4 with plane zplane offset {-upperCrustHeight-lowerCrustHeight}
+merge all
+compress all
+#define cell sizes
+${maxCellSize=20.0*km}
+${minCellSize=1.0*km}
+${CRCellSize=5.0*km}
+# ----------------------------------------------------------------------
+# Create tet4 mesh with resolution dictated by 'cell_size_fn'.
+# ----------------------------------------------------------------------
+volume all scheme tetmesh
+import sizing function "temp_mesh.exo" block all variable "cell_size_fn" time 0
+surface 1 size {CRCellSize}
+surface 2 size {CRCellSize}
+surface 3 size {CRCellSize}
+surface 4 size {CRCellSize}
+surface 5 size {CRCellSize}
+surface 6 size {CRCellSize}
+surface 7 size {CRCellSize}
+surface 8 size {CRCellSize}
+surface 9 sizing function type exodus
+surface 10 size {maxCellSize}
+surface 11 size {minCellSize}
+surface 12 size {minCellSize}
+surface 13 size {minCellSize}
+surface 14 size {minCellSize}
+surface 15 size {minCellSize}
+surface 16 size {minCellSize}
+surface 17 size {minCellSize}
+surface 18 size {minCellSize}
+surface 19 sizing function type exodus
+surface 20 size {CRCellSize}
+surface 21 size {CRCellSize}
+surface 22 size {CRCellSize}
+surface 23 size {CRCellSize}
+surface 24 size {maxCellSize}
+surface 25 size {maxCellSize}
+surface 26 size {maxCellSize}
+surface 27 size {maxCellSize}
+surface 28 size {CRCellSize}
+surface 29 size {CRCellSize}
+surface 30 size {CRCellSize}
+surface 31 size {CRCellSize}
+surface 33 size {maxCellSize}
+surface 34 size {maxCellSize}
+surface 35 size {maxCellSize}
+surface 36 size {maxCellSize}
+surface 37 size {maxCellSize}
+surface 38 size {maxCellSize}
+surface 39 size {maxCellSize}
+surface 40 size {maxCellSize}
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+mesh surface all
+mesh volume all
+# ----------------------------------------------------------------------
+# Smooth mesh to improve quality
+# ----------------------------------------------------------------------
+volume all smooth scheme condition number beta 1.8 cpu 10
+surface all smooth scheme condition number beta 1.8 cpu 10
+smooth volume all
+# ----------------------------------------------------------------------------------------------
+# Create Boundary Conditions
+#----------------------------------------------------------------------------------------------
+#Create blocks for materials
+block 1 volume 1
+block 1 name "upperCrust"
+block 2 volume 4
+block 2 name "lowerCrust"
+block 3 volume 3
+block 3 name "viscoelasticCylinder"
+block 4 volume 5
+block 4 name "lithosphericMantle"
+block 5 volume 2
+block 5 name "outerCR"
+merge all
+compress all
+# Chamber nodesets
+group "chamber_top" add node in surface 11 13 15 16
+nodeset 1 chamber_top
+nodeset 1 name "chamber_top"
+group "chamber_bot" add node in surface 12 14 17 18
+nodeset 2 chamber_bot
+nodeset 2 name "chamber_bot"
+# +x face nodeset
+group "face_xpos" add node in surface 27 35 38
+nodeset 3 face_xpos
+nodeset 3 name "face_xpos"
+# -x face nodeset
+group "face_xneg" add node in surface 25 33 40
+nodeset 4 face_xneg
+nodeset 4 name "face_xneg"
+# +y face nodeset
+group "face_ypos" add node in surface 24 36 37
+nodeset 5 face_ypos
+nodeset 5 name "face_ypos"
+# -y face nodeset
+group "face_yneg" add node in surface 26 34 39
+nodeset 6 face_yneg
+nodeset 6 name "face_yneg"
+# +z face nodeset
+group "face_zpos" add node in surface 9
+nodeset 7 face_zpos
+nodeset 7 name "face_zpos"
+# -z face nodeset
+group "face_zneg" add node in surface 10
+nodeset 8 face_zneg
+nodeset 8 name "face_zneg"
+export mesh "run230_run2.exo" dimension 3 overwrite
+reset
+undo off
+cd "/home/grantblock/Research/Yellowstone/Mesh/nested_CR/run230_run3"
+# ----------------------------------------------------------------------
+# Set units to SI
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Set  geometry parameters
+# ----------------------------------------------------------------------
+${CR_depth=4.0*km}
+${inner_CR_depth=5.5*km}
+${source_depth=6.5*km}
+#source and CR parameters
+${base_CR_x_rad = 13.0*km}
+${base_CR_y_rad = 27.5*km}
+${base_CR_z_rad = 2.5*km}
+${CR_x_rad = base_CR_x_rad}
+${CR_y_rad = base_CR_y_rad}
+${CR_height = 26.0*km}
+${inner_CR_x_rad = 0.6*base_CR_x_rad}
+${inner_CR_y_rad = 0.6*base_CR_y_rad}
+${inner_CR_height = 19.0*km}
+${source_x_rad=0.25*base_CR_x_rad}
+${source_y_rad=0.25*base_CR_y_rad}
+${source_z_rad=0.25*base_CR_z_rad}
+${source_x_shift = 0.0*km}
+${source_y_shift = 0.0*km}
+${CR_x_shift =0.0*km}
+${CR_y_shift = 0.0*km}
+# Domain size parameters
+${sizeX=200.0*km}
+${sizeY=200.0*km}
+${sizeZ=100.0*km}
+${upperCrustHeight=5*km}
+${lowerCrustHeight=45*km}
+${lithosphericMantleHeight=50*km}
+#${asthenosphereHeight=100*km}
+#------------------------------------------------------------------------
+# Create ellipsoidal magma chamber
+#------------------------------------------------------------------------
+create vertex 0 0 0
+create vertex 0 -6875 0
+create vertex 0 0 -625
+create vertex -3250 0 0
+curve 1 copy reflect z
+curve 2 copy reflect z
+create curve vertex 3 7
+create surface curve 3 4 6
+create surface curve 1 2 6
+merge all
+body 1 copy reflect x
+body 2 copy reflect x
+body 1 copy reflect y
+body 3 copy reflect y
+body 2 copy reflect y
+body 4 copy reflect y
+create volume surface 1 2 3 4 5 6 7 8 heal
+delete vertex 1
+delete curve 5
+compress all
+# Move out of the way
+volume 1 move x {source_x_shift} y {source_y_shift} z {source_depth}
+#----------------------------------------------------------------------------
+# Create the domain, a block with a large ellipsoidal
+# CR
+#----------------------------------------------------------------------------
+# create the CR eliptical prism
+create vertex 0 0 0
+create vertex 0 -27500 0
+create vertex -13000 0 0
+curve 13 copy reflect y
+curve 13 copy reflect x
+curve 14 copy reflect x
+create surface curve 13 14 15 16
+delete vertex 7
+sweep surface 9 direction 0 0 1 distance -26000
+# Move out of the way
+volume 2 move x {CR_x_shift} y {CR_y_shift} z {3*source_depth}
+# create the inner CR elliptical prism
+create vertex 0 0 0
+create vertex 0 -16500 0
+create vertex -7800 0 0
+curve 25 copy reflect y
+curve 25 copy reflect x
+curve 26 copy reflect x
+create surface curve 25 26 27 28
+delete vertex 20
+sweep surface 15 direction 0 0 1 distance -19000
+volume 3 move x 0 y 0 z {3*source_depth}
+create brick x {sizeX} y {sizeY} z {sizeZ}
+volume 4 move x 0 y 0 z {-0.5*sizeZ}
+#move volumes back and subtract
+volume 2 move copy x 0 y 0 z {-3*source_depth-CR_depth/2}
+subtract volume 5 from 4
+volume 2 move x 0 y 0 z {-3*source_depth-CR_depth/2}
+volume 3 move copy x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+subtract volume 7 from 2
+volume 3 move x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+volume 1 move x 0 y 0 z {-2*source_depth}
+subtract volume 1 from 3
+merge all
+compress all
+#cut domain into layers
+webcut volume 1 with plane zplane offset {-upperCrustHeight}
+imprint volume 1 with volume 2
+webcut volume 4 with plane zplane offset {-upperCrustHeight-lowerCrustHeight}
+merge all
+compress all
+reset
+undo off
+reset
+undo off
+cd "/home/grantblock/Research/Yellowstone/Mesh/nested_CR/run230_run3"
+# ----------------------------------------------------------------------
+# Set units to SI
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Set  geometry parameters
+# ----------------------------------------------------------------------
+${CR_depth=4.0*km}
+${inner_CR_depth=5.5*km}
+${source_depth=6.5*km}
+#source and CR parameters
+${base_CR_x_rad = 13.0*km}
+${base_CR_y_rad = 27.5*km}
+${base_CR_z_rad = 2.5*km}
+${CR_x_rad = base_CR_x_rad}
+${CR_y_rad = base_CR_y_rad}
+${CR_height = 26.0*km}
+${inner_CR_x_rad = 0.6*base_CR_x_rad}
+${inner_CR_y_rad = 0.6*base_CR_y_rad}
+${inner_CR_height = 19.0*km}
+${source_x_rad=0.25*base_CR_x_rad}
+${source_y_rad=0.25*base_CR_y_rad}
+${source_z_rad=0.25*base_CR_z_rad}
+${source_x_shift = 0.0*km}
+${source_y_shift = 0.0*km}
+${CR_x_shift =0.0*km}
+${CR_y_shift = 0.0*km}
+# Domain size parameters
+${sizeX=200.0*km}
+${sizeY=200.0*km}
+${sizeZ=100.0*km}
+${upperCrustHeight=5*km}
+${lowerCrustHeight=45*km}
+${lithosphericMantleHeight=50*km}
+#${asthenosphereHeight=100*km}
+#------------------------------------------------------------------------
+# Create ellipsoidal magma chamber
+#------------------------------------------------------------------------
+create vertex 0 0 0
+create vertex 0 -6875 0
+create vertex 0 0 -625
+create vertex -3250 0 0
+curve 1 copy reflect z
+curve 2 copy reflect z
+create curve vertex 3 7
+create surface curve 3 4 6
+create surface curve 1 2 6
+merge all
+body 1 copy reflect x
+body 2 copy reflect x
+body 1 copy reflect y
+body 3 copy reflect y
+body 2 copy reflect y
+body 4 copy reflect y
+create volume surface 1 2 3 4 5 6 7 8 heal
+delete vertex 1
+delete curve 5
+compress all
+# Move out of the way
+volume 1 move x {source_x_shift} y {source_y_shift} z {source_depth}
+#----------------------------------------------------------------------------
+# Create the domain, a block with a large ellipsoidal
+# CR
+#----------------------------------------------------------------------------
+# create the CR eliptical prism
+create vertex 0 0 0
+create vertex 0 -27500 0
+create vertex -13000 0 0
+curve 13 copy reflect y
+curve 13 copy reflect x
+curve 14 copy reflect x
+create surface curve 13 14 15 16
+delete vertex 7
+sweep surface 9 direction 0 0 1 distance -26000
+# Move out of the way
+volume 2 move x {CR_x_shift} y {CR_y_shift} z {3*source_depth}
+# create the inner CR elliptical prism
+create vertex 0 0 0
+create vertex 0 -16500 0
+create vertex -7800 0 0
+curve 25 copy reflect y
+curve 25 copy reflect x
+curve 26 copy reflect x
+create surface curve 25 26 27 28
+delete vertex 20
+sweep surface 15 direction 0 0 1 distance -19000
+volume 3 move x 0 y 0 z {3*source_depth}
+create brick x {sizeX} y {sizeY} z {sizeZ}
+volume 4 move x 0 y 0 z {-0.5*sizeZ}
+#move volumes back and subtract
+volume 2 move copy x 0 y 0 z {-3*source_depth-CR_depth/2}
+subtract volume 5 from 4
+volume 2 move x 0 y 0 z {-3*source_depth-CR_depth/2}
+volume 3 move copy x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+subtract volume 7 from 2
+volume 3 move x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+volume 1 move x 0 y 0 z {-2*source_depth}
+subtract volume 1 from 3
+merge all
+compress all
+#cut domain into layers
+webcut volume 1 with plane zplane offset {-upperCrustHeight}
+imprint volume 1 with volume 2
+webcut volume 4 with plane zplane offset {-upperCrustHeight-lowerCrustHeight}
+merge all
+compress all
+#---------------------------------------------------------------------------
+# Set element sizes and mesh the geometry
+#---------------------------------------------------------------------------
+${maxCellSize=20.0*km}
+volume all size {maxCellSize}
+volume all scheme tetmesh
+mesh surface all
+mesh volume all
+#Export temp exodus file
+set large exodus file off
+block 1 volume all
+export mesh "temp_mesh.exo" dimension 3 overwrite
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+reset
+undo off
+cd "/home/grantblock/Research/Yellowstone/Mesh/nested_CR/run230_run3"
+# ----------------------------------------------------------------------
+# Set units to SI
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Set  geometry parameters
+# ----------------------------------------------------------------------
+${CR_depth=4.0*km}
+${inner_CR_depth=5.5*km}
+${source_depth=6.5*km}
+#source and CR parameters
+${base_CR_x_rad = 13.0*km}
+${base_CR_y_rad = 27.5*km}
+${base_CR_z_rad = 2.5*km}
+${CR_x_rad = base_CR_x_rad}
+${CR_y_rad = base_CR_y_rad}
+${CR_height = 26.0*km}
+${inner_CR_x_rad = 0.6*base_CR_x_rad}
+${inner_CR_y_rad = 0.6*base_CR_y_rad}
+${inner_CR_height = 19.0*km}
+${source_x_rad=0.25*base_CR_x_rad}
+${source_y_rad=0.25*base_CR_y_rad}
+${source_z_rad=0.25*base_CR_z_rad}
+${source_x_shift = 0.0*km}
+${source_y_shift = 0.0*km}
+${CR_x_shift =0.0*km}
+${CR_y_shift = 0.0*km}
+# Domain size parameters
+${sizeX=200.0*km}
+${sizeY=200.0*km}
+${sizeZ=100.0*km}
+${upperCrustHeight=5*km}
+${lowerCrustHeight=45*km}
+${lithosphericMantleHeight=50*km}
+#${asthenosphereHeight=100*km}
+#------------------------------------------------------------------------
+# Create ellipsoidal magma chamber
+#------------------------------------------------------------------------
+create vertex 0 0 0
+create vertex 0 -6875 0
+create vertex 0 0 -625
+create vertex -3250 0 0
+curve 1 copy reflect z
+curve 2 copy reflect z
+create curve vertex 3 7
+create surface curve 3 4 6
+create surface curve 1 2 6
+merge all
+body 1 copy reflect x
+body 2 copy reflect x
+body 1 copy reflect y
+body 3 copy reflect y
+body 2 copy reflect y
+body 4 copy reflect y
+create volume surface 1 2 3 4 5 6 7 8 heal
+delete vertex 1
+delete curve 5
+compress all
+# Move out of the way
+volume 1 move x {source_x_shift} y {source_y_shift} z {source_depth}
+#----------------------------------------------------------------------------
+# Create the domain, a block with a large ellipsoidal
+# CR
+#----------------------------------------------------------------------------
+# create the CR eliptical prism
+create vertex 0 0 0
+create vertex 0 -27500 0
+create vertex -13000 0 0
+curve 13 copy reflect y
+curve 13 copy reflect x
+curve 14 copy reflect x
+create surface curve 13 14 15 16
+delete vertex 7
+sweep surface 9 direction 0 0 1 distance -26000
+# Move out of the way
+volume 2 move x {CR_x_shift} y {CR_y_shift} z {3*source_depth}
+# create the inner CR elliptical prism
+create vertex 0 0 0
+create vertex 0 -16500 0
+create vertex -7800 0 0
+curve 25 copy reflect y
+curve 25 copy reflect x
+curve 26 copy reflect x
+create surface curve 25 26 27 28
+delete vertex 20
+sweep surface 15 direction 0 0 1 distance -19000
+volume 3 move x 0 y 0 z {3*source_depth}
+create brick x {sizeX} y {sizeY} z {sizeZ}
+volume 4 move x 0 y 0 z {-0.5*sizeZ}
+#move volumes back and subtract
+volume 2 move copy x 0 y 0 z {-3*source_depth-CR_depth/2}
+subtract volume 5 from 4
+volume 2 move x 0 y 0 z {-3*source_depth-CR_depth/2}
+volume 3 move copy x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+subtract volume 7 from 2
+volume 3 move x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+volume 1 move x 0 y 0 z {-2*source_depth}
+subtract volume 1 from 3
+merge all
+compress all
+#cut domain into layers
+webcut volume 1 with plane zplane offset {-upperCrustHeight}
+imprint volume 1 with volume 2
+webcut volume 4 with plane zplane offset {-upperCrustHeight-lowerCrustHeight}
+merge all
+compress all
+#define cell sizes
+${maxCellSize=20.0*km}
+${minCellSize=1.0*km}
+${CRCellSize=5.0*km}
+# ----------------------------------------------------------------------
+# Create tet4 mesh with resolution dictated by 'cell_size_fn'.
+# ----------------------------------------------------------------------
+volume all scheme tetmesh
+import sizing function "temp_mesh.exo" block all variable "cell_size_fn" time 0
+surface 1 size {CRCellSize}
+surface 2 size {CRCellSize}
+surface 3 size {CRCellSize}
+surface 4 size {CRCellSize}
+surface 5 size {CRCellSize}
+surface 6 size {CRCellSize}
+surface 7 size {CRCellSize}
+surface 8 size {CRCellSize}
+surface 9 sizing function type exodus
+surface 10 size {maxCellSize}
+surface 11 size {minCellSize}
+surface 12 size {minCellSize}
+surface 13 size {minCellSize}
+surface 14 size {minCellSize}
+surface 15 size {minCellSize}
+surface 16 size {minCellSize}
+surface 17 size {minCellSize}
+surface 18 size {minCellSize}
+surface 19 sizing function type exodus
+surface 20 size {CRCellSize}
+surface 21 size {CRCellSize}
+surface 22 size {CRCellSize}
+surface 23 size {CRCellSize}
+surface 24 size {maxCellSize}
+surface 25 size {maxCellSize}
+surface 26 size {maxCellSize}
+surface 27 size {maxCellSize}
+surface 28 size {CRCellSize}
+surface 29 size {CRCellSize}
+surface 30 size {CRCellSize}
+surface 31 size {CRCellSize}
+surface 33 size {maxCellSize}
+surface 34 size {maxCellSize}
+surface 35 size {maxCellSize}
+surface 36 size {maxCellSize}
+surface 37 size {maxCellSize}
+surface 38 size {maxCellSize}
+surface 39 size {maxCellSize}
+surface 40 size {maxCellSize}
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+mesh surface all
+mesh volume all
+# ----------------------------------------------------------------------
+# Smooth mesh to improve quality
+# ----------------------------------------------------------------------
+volume all smooth scheme condition number beta 1.8 cpu 10
+surface all smooth scheme condition number beta 1.8 cpu 10
+smooth volume all
+# ----------------------------------------------------------------------------------------------
+# Create Boundary Conditions
+#----------------------------------------------------------------------------------------------
+#Create blocks for materials
+block 1 volume 1
+block 1 name "upperCrust"
+block 2 volume 4
+block 2 name "lowerCrust"
+block 3 volume 3
+block 3 name "viscoelasticCylinder"
+block 4 volume 5
+block 4 name "lithosphericMantle"
+block 5 volume 2
+block 5 name "outerCR"
+merge all
+compress all
+# Chamber nodesets
+group "chamber_top" add node in surface 11 13 15 16
+nodeset 1 chamber_top
+nodeset 1 name "chamber_top"
+group "chamber_bot" add node in surface 12 14 17 18
+nodeset 2 chamber_bot
+nodeset 2 name "chamber_bot"
+# +x face nodeset
+group "face_xpos" add node in surface 27 35 38
+nodeset 3 face_xpos
+nodeset 3 name "face_xpos"
+# -x face nodeset
+group "face_xneg" add node in surface 25 33 40
+nodeset 4 face_xneg
+nodeset 4 name "face_xneg"
+# +y face nodeset
+group "face_ypos" add node in surface 24 36 37
+nodeset 5 face_ypos
+nodeset 5 name "face_ypos"
+# -y face nodeset
+group "face_yneg" add node in surface 26 34 39
+nodeset 6 face_yneg
+nodeset 6 name "face_yneg"
+# +z face nodeset
+group "face_zpos" add node in surface 9
+nodeset 7 face_zpos
+nodeset 7 name "face_zpos"
+# -z face nodeset
+group "face_zneg" add node in surface 10
+nodeset 8 face_zneg
+nodeset 8 name "face_zneg"
+export mesh "run230_run3.exo" dimension 3 overwrite
+reset
+undo off
+cd "/home/grantblock/Research/Yellowstone/Mesh/nested_CR/run230"
+# ----------------------------------------------------------------------
+# Set units to SI
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Set  geometry parameters
+# ----------------------------------------------------------------------
+${CR_depth=4.0*km}
+${inner_CR_depth=5.5*km}
+${source_depth=4.0*km}
+#source and CR parameters
+${base_CR_x_rad = 13.0*km}
+${base_CR_y_rad = 27.5*km}
+${base_CR_z_rad = 2.5*km}
+${CR_x_rad = base_CR_x_rad}
+${CR_y_rad = base_CR_y_rad}
+${CR_height = 26.0*km}
+${inner_CR_x_rad = 0.6*base_CR_x_rad}
+${inner_CR_y_rad = 0.6*base_CR_y_rad}
+${inner_CR_height = 19.0*km}
+${source_x_rad=0.25*base_CR_x_rad}
+${source_y_rad=0.250*base_CR_y_rad}
+${source_z_rad=0.25*base_CR_z_rad}
+${source_x_shift = 0.0*km}
+${source_y_shift = 0.0*km}
+${CR_x_shift =0.0*km}
+${CR_y_shift = 0.0*km}
+# Domain size parameters
+${sizeX=200.0*km}
+${sizeY=200.0*km}
+${sizeZ=100.0*km}
+${upperCrustHeight=5*km}
+${lowerCrustHeight=45*km}
+${lithosphericMantleHeight=50*km}
+#${asthenosphereHeight=100*km}
+#------------------------------------------------------------------------
+# Create ellipsoidal magma chamber
+#------------------------------------------------------------------------
+create vertex 0 0 0
+create vertex 0 -6875 0
+create vertex 0 0 -625
+create vertex -3250 0 0
+curve 1 copy reflect z
+curve 2 copy reflect z
+create curve vertex 3 7
+create surface curve 3 4 6
+create surface curve 1 2 6
+merge all
+body 1 copy reflect x
+body 2 copy reflect x
+body 1 copy reflect y
+body 3 copy reflect y
+body 2 copy reflect y
+body 4 copy reflect y
+create volume surface 1 2 3 4 5 6 7 8 heal
+delete vertex 1
+delete curve 5
+compress all
+# Move out of the way
+volume 1 move x {source_x_shift} y {source_y_shift} z {source_depth}
+#----------------------------------------------------------------------------
+# Create the domain, a block with a large ellipsoidal
+# CR
+#----------------------------------------------------------------------------
+# create the CR eliptical prism
+create vertex 0 0 0
+create vertex 0 -27500 0
+create vertex -13000 0 0
+curve 13 copy reflect y
+curve 13 copy reflect x
+curve 14 copy reflect x
+create surface curve 13 14 15 16
+delete vertex 7
+sweep surface 9 direction 0 0 1 distance -26000
+# Move out of the way
+volume 2 move x {CR_x_shift} y {CR_y_shift} z {3*source_depth}
+# create the inner CR elliptical prism
+create vertex 0 0 0
+create vertex 0 -16500 0
+create vertex -7800 0 0
+curve 25 copy reflect y
+curve 25 copy reflect x
+curve 26 copy reflect x
+create surface curve 25 26 27 28
+delete vertex 20
+sweep surface 15 direction 0 0 1 distance -19000
+volume 3 move x 0 y 0 z {3*source_depth}
+create brick x {sizeX} y {sizeY} z {sizeZ}
+volume 4 move x 0 y 0 z {-0.5*sizeZ}
+#move volumes back and subtract
+volume 2 move copy x 0 y 0 z {-3*source_depth-CR_depth/2}
+subtract volume 5 from 4
+volume 2 move x 0 y 0 z {-3*source_depth-CR_depth/2}
+volume 3 move copy x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+subtract volume 7 from 2
+volume 3 move x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+volume 1 move x 0 y 0 z {-2*source_depth}
+subtract volume 1 from 3
+merge all
+compress all
+#cut domain into layers
+webcut volume 1 with plane zplane offset {-upperCrustHeight}
+imprint volume 1 with volume 2
+webcut volume 4 with plane zplane offset {-upperCrustHeight-lowerCrustHeight}
+merge all
+compress all
+reset
+undo off
+reset
+undo off
+cd "/home/grantblock/Research/Yellowstone/Mesh/nested_CR/run230"
+# ----------------------------------------------------------------------
+# Set units to SI
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Set  geometry parameters
+# ----------------------------------------------------------------------
+${CR_depth=4.0*km}
+${inner_CR_depth=5.5*km}
+${source_depth=4.0*km}
+#source and CR parameters
+${base_CR_x_rad = 13.0*km}
+${base_CR_y_rad = 27.5*km}
+${base_CR_z_rad = 2.5*km}
+${CR_x_rad = base_CR_x_rad}
+${CR_y_rad = base_CR_y_rad}
+${CR_height = 26.0*km}
+${inner_CR_x_rad = 0.6*base_CR_x_rad}
+${inner_CR_y_rad = 0.6*base_CR_y_rad}
+${inner_CR_height = 19.0*km}
+${source_x_rad=0.25*base_CR_x_rad}
+${source_y_rad=0.250*base_CR_y_rad}
+${source_z_rad=0.25*base_CR_z_rad}
+${source_x_shift = 0.0*km}
+${source_y_shift = 0.0*km}
+${CR_x_shift =0.0*km}
+${CR_y_shift = 0.0*km}
+# Domain size parameters
+${sizeX=200.0*km}
+${sizeY=200.0*km}
+${sizeZ=100.0*km}
+${upperCrustHeight=5*km}
+${lowerCrustHeight=45*km}
+${lithosphericMantleHeight=50*km}
+#${asthenosphereHeight=100*km}
+#------------------------------------------------------------------------
+# Create ellipsoidal magma chamber
+#------------------------------------------------------------------------
+create vertex 0 0 0
+create vertex 0 -6875 0
+create vertex 0 0 -625
+create vertex -3250 0 0
+curve 1 copy reflect z
+curve 2 copy reflect z
+create curve vertex 3 7
+create surface curve 3 4 6
+create surface curve 1 2 6
+merge all
+body 1 copy reflect x
+body 2 copy reflect x
+body 1 copy reflect y
+body 3 copy reflect y
+body 2 copy reflect y
+body 4 copy reflect y
+create volume surface 1 2 3 4 5 6 7 8 heal
+delete vertex 1
+delete curve 5
+compress all
+# Move out of the way
+volume 1 move x {source_x_shift} y {source_y_shift} z {source_depth}
+#----------------------------------------------------------------------------
+# Create the domain, a block with a large ellipsoidal
+# CR
+#----------------------------------------------------------------------------
+# create the CR eliptical prism
+create vertex 0 0 0
+create vertex 0 -27500 0
+create vertex -13000 0 0
+curve 13 copy reflect y
+curve 13 copy reflect x
+curve 14 copy reflect x
+create surface curve 13 14 15 16
+delete vertex 7
+sweep surface 9 direction 0 0 1 distance -26000
+# Move out of the way
+volume 2 move x {CR_x_shift} y {CR_y_shift} z {3*source_depth}
+# create the inner CR elliptical prism
+create vertex 0 0 0
+create vertex 0 -16500 0
+create vertex -7800 0 0
+curve 25 copy reflect y
+curve 25 copy reflect x
+curve 26 copy reflect x
+create surface curve 25 26 27 28
+delete vertex 20
+sweep surface 15 direction 0 0 1 distance -19000
+volume 3 move x 0 y 0 z {3*source_depth}
+create brick x {sizeX} y {sizeY} z {sizeZ}
+volume 4 move x 0 y 0 z {-0.5*sizeZ}
+#move volumes back and subtract
+volume 2 move copy x 0 y 0 z {-3*source_depth-CR_depth/2}
+subtract volume 5 from 4
+volume 2 move x 0 y 0 z {-3*source_depth-CR_depth/2}
+volume 3 move copy x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+subtract volume 7 from 2
+volume 3 move x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+volume 1 move x 0 y 0 z {-2*source_depth}
+subtract volume 1 from 3
+merge all
+compress all
+#cut domain into layers
+webcut volume 1 with plane zplane offset {-upperCrustHeight}
+imprint volume 1 with volume 2
+webcut volume 4 with plane zplane offset {-upperCrustHeight-lowerCrustHeight}
+merge all
+compress all
+#---------------------------------------------------------------------------
+# Set element sizes and mesh the geometry
+#---------------------------------------------------------------------------
+${maxCellSize=20.0*km}
+volume all size {maxCellSize}
+volume all scheme tetmesh
+mesh surface all
+mesh volume all
+#Export temp exodus file
+set large exodus file off
+block 1 volume all
+export mesh "temp_mesh.exo" dimension 3 overwrite
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+reset
+undo off
+cd "/home/grantblock/Research/Yellowstone/Mesh/nested_CR/run230"
+# ----------------------------------------------------------------------
+# Set units to SI
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Set  geometry parameters
+# ----------------------------------------------------------------------
+${CR_depth=4.0*km}
+${inner_CR_depth=5.5*km}
+${source_depth=4.0*km}
+#source and CR parameters
+${base_CR_x_rad = 13.0*km}
+${base_CR_y_rad = 27.5*km}
+${base_CR_z_rad = 2.5*km}
+${CR_x_rad = base_CR_x_rad}
+${CR_y_rad = base_CR_y_rad}
+${CR_height = 26.0*km}
+${inner_CR_x_rad = 0.6*base_CR_x_rad}
+${inner_CR_y_rad = 0.6*base_CR_y_rad}
+${inner_CR_height = 19.0*km}
+${source_x_rad=0.25*base_CR_x_rad}
+${source_y_rad=0.250*base_CR_y_rad}
+${source_z_rad=0.25*base_CR_z_rad}
+${source_x_shift = 0.0*km}
+${source_y_shift = 0.0*km}
+${CR_x_shift =0.0*km}
+${CR_y_shift = 0.0*km}
+# Domain size parameters
+${sizeX=200.0*km}
+${sizeY=200.0*km}
+${sizeZ=100.0*km}
+${upperCrustHeight=5*km}
+${lowerCrustHeight=45*km}
+${lithosphericMantleHeight=50*km}
+#${asthenosphereHeight=100*km}
+#------------------------------------------------------------------------
+# Create ellipsoidal magma chamber
+#------------------------------------------------------------------------
+create vertex 0 0 0
+create vertex 0 -6875 0
+create vertex 0 0 -625
+create vertex -3250 0 0
+curve 1 copy reflect z
+curve 2 copy reflect z
+create curve vertex 3 7
+create surface curve 3 4 6
+create surface curve 1 2 6
+merge all
+body 1 copy reflect x
+body 2 copy reflect x
+body 1 copy reflect y
+body 3 copy reflect y
+body 2 copy reflect y
+body 4 copy reflect y
+create volume surface 1 2 3 4 5 6 7 8 heal
+delete vertex 1
+delete curve 5
+compress all
+# Move out of the way
+volume 1 move x {source_x_shift} y {source_y_shift} z {source_depth}
+#----------------------------------------------------------------------------
+# Create the domain, a block with a large ellipsoidal
+# CR
+#----------------------------------------------------------------------------
+# create the CR eliptical prism
+create vertex 0 0 0
+create vertex 0 -27500 0
+create vertex -13000 0 0
+curve 13 copy reflect y
+curve 13 copy reflect x
+curve 14 copy reflect x
+create surface curve 13 14 15 16
+delete vertex 7
+sweep surface 9 direction 0 0 1 distance -26000
+# Move out of the way
+volume 2 move x {CR_x_shift} y {CR_y_shift} z {3*source_depth}
+# create the inner CR elliptical prism
+create vertex 0 0 0
+create vertex 0 -16500 0
+create vertex -7800 0 0
+curve 25 copy reflect y
+curve 25 copy reflect x
+curve 26 copy reflect x
+create surface curve 25 26 27 28
+delete vertex 20
+sweep surface 15 direction 0 0 1 distance -19000
+volume 3 move x 0 y 0 z {3*source_depth}
+create brick x {sizeX} y {sizeY} z {sizeZ}
+volume 4 move x 0 y 0 z {-0.5*sizeZ}
+#move volumes back and subtract
+volume 2 move copy x 0 y 0 z {-3*source_depth-CR_depth/2}
+subtract volume 5 from 4
+volume 2 move x 0 y 0 z {-3*source_depth-CR_depth/2}
+volume 3 move copy x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+subtract volume 7 from 2
+volume 3 move x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+volume 1 move x 0 y 0 z {-2*source_depth}
+subtract volume 1 from 3
+merge all
+compress all
+#cut domain into layers
+webcut volume 1 with plane zplane offset {-upperCrustHeight}
+imprint volume 1 with volume 2
+webcut volume 4 with plane zplane offset {-upperCrustHeight-lowerCrustHeight}
+merge all
+compress all
+#define cell sizes
+${maxCellSize=20.0*km}
+${minCellSize=1.0*km}
+${CRCellSize=5.0*km}
+# ----------------------------------------------------------------------
+# Create tet4 mesh with resolution dictated by 'cell_size_fn'.
+# ----------------------------------------------------------------------
+volume all scheme tetmesh
+import sizing function "temp_mesh.exo" block all variable "cell_size_fn" time 0
+surface 1 size {CRCellSize}
+surface 2 size {CRCellSize}
+surface 3 size {CRCellSize}
+surface 4 size {CRCellSize}
+surface 5 size {CRCellSize}
+surface 6 size {CRCellSize}
+surface 7 size {CRCellSize}
+surface 8 size {CRCellSize}
+surface 9 sizing function type exodus
+surface 10 size {maxCellSize}
+surface 11 size {minCellSize}
+surface 12 size {minCellSize}
+surface 13 size {minCellSize}
+surface 14 size {minCellSize}
+surface 15 size {minCellSize}
+surface 16 size {minCellSize}
+surface 17 size {minCellSize}
+surface 18 size {minCellSize}
+surface 19 sizing function type exodus
+surface 20 size {CRCellSize}
+surface 21 size {CRCellSize}
+surface 22 size {CRCellSize}
+surface 23 size {CRCellSize}
+surface 24 size {maxCellSize}
+surface 25 size {maxCellSize}
+surface 26 size {maxCellSize}
+surface 27 size {maxCellSize}
+surface 28 size {CRCellSize}
+surface 29 size {CRCellSize}
+surface 30 size {CRCellSize}
+surface 31 size {CRCellSize}
+surface 33 size {maxCellSize}
+surface 34 size {maxCellSize}
+surface 35 size {maxCellSize}
+surface 36 size {maxCellSize}
+surface 37 size {maxCellSize}
+surface 38 size {maxCellSize}
+surface 39 size {maxCellSize}
+surface 40 size {maxCellSize}
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+mesh surface all
+mesh volume all
+# ----------------------------------------------------------------------
+# Smooth mesh to improve quality
+# ----------------------------------------------------------------------
+volume all smooth scheme condition number beta 1.8 cpu 10
+surface all smooth scheme condition number beta 1.8 cpu 10
+smooth volume all
+# ----------------------------------------------------------------------------------------------
+# Create Boundary Conditions
+#----------------------------------------------------------------------------------------------
+#Create blocks for materials
+block 1 volume 1
+block 1 name "upperCrust"
+block 2 volume 4
+block 2 name "lowerCrust"
+block 3 volume 3
+block 3 name "viscoelasticCylinder"
+block 4 volume 5
+block 4 name "lithosphericMantle"
+block 5 volume 2
+block 5 name "outerCR"
+merge all
+compress all
+# Chamber nodesets
+group "chamber_top" add node in surface 11 13 15 16
+nodeset 1 chamber_top
+nodeset 1 name "chamber_top"
+group "chamber_bot" add node in surface 12 14 17 18
+nodeset 2 chamber_bot
+nodeset 2 name "chamber_bot"
+# +x face nodeset
+group "face_xpos" add node in surface 27 35 38
+nodeset 3 face_xpos
+nodeset 3 name "face_xpos"
+# -x face nodeset
+group "face_xneg" add node in surface 25 33 40
+nodeset 4 face_xneg
+nodeset 4 name "face_xneg"
+# +y face nodeset
+group "face_ypos" add node in surface 24 36 37
+nodeset 5 face_ypos
+nodeset 5 name "face_ypos"
+# -y face nodeset
+group "face_yneg" add node in surface 26 34 39
+nodeset 6 face_yneg
+nodeset 6 name "face_yneg"
+# +z face nodeset
+group "face_zpos" add node in surface 9
+nodeset 7 face_zpos
+nodeset 7 name "face_zpos"
+# -z face nodeset
+group "face_zneg" add node in surface 10
+nodeset 8 face_zneg
+nodeset 8 name "face_zneg"
+export mesh "run230.exo" dimension 3 overwrite
+reset
+undo off
+cd "/home/grantblock/Research/Yellowstone/Mesh/nested_CR/run230_run2"
+# ----------------------------------------------------------------------
+# Set units to SI
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Set  geometry parameters
+# ----------------------------------------------------------------------
+${CR_depth=4.0*km}
+${inner_CR_depth=5.5*km}
+${source_depth=4.0*km}
+#source and CR parameters
+${base_CR_x_rad = 13.0*km}
+${base_CR_y_rad = 27.5*km}
+${base_CR_z_rad = 2.5*km}
+${CR_x_rad = base_CR_x_rad}
+${CR_y_rad = base_CR_y_rad}
+${CR_height = 26.0*km}
+${inner_CR_x_rad = 0.9*base_CR_x_rad}
+${inner_CR_y_rad = 0.9*base_CR_y_rad}
+${inner_CR_height = 19.0*km}
+${source_x_rad=0.25*base_CR_x_rad}
+${source_y_rad=0.25*base_CR_y_rad}
+${source_z_rad=0.25*base_CR_z_rad}
+${source_x_shift = 0.0*km}
+${source_y_shift = 0.0*km}
+${CR_x_shift =0.0*km}
+${CR_y_shift = 0.0*km}
+# Domain size parameters
+${sizeX=200.0*km}
+${sizeY=200.0*km}
+${sizeZ=100.0*km}
+${upperCrustHeight=5*km}
+${lowerCrustHeight=45*km}
+${lithosphericMantleHeight=50*km}
+#${asthenosphereHeight=100*km}
+#------------------------------------------------------------------------
+# Create ellipsoidal magma chamber
+#------------------------------------------------------------------------
+create vertex 0 0 0
+create vertex 0 -6875 0
+create vertex 0 0 -625
+create vertex -3250 0 0
+curve 1 copy reflect z
+curve 2 copy reflect z
+create curve vertex 3 7
+create surface curve 3 4 6
+create surface curve 1 2 6
+merge all
+body 1 copy reflect x
+body 2 copy reflect x
+body 1 copy reflect y
+body 3 copy reflect y
+body 2 copy reflect y
+body 4 copy reflect y
+create volume surface 1 2 3 4 5 6 7 8 heal
+delete vertex 1
+delete curve 5
+compress all
+# Move out of the way
+volume 1 move x {source_x_shift} y {source_y_shift} z {source_depth}
+#----------------------------------------------------------------------------
+# Create the domain, a block with a large ellipsoidal
+# CR
+#----------------------------------------------------------------------------
+# create the CR eliptical prism
+create vertex 0 0 0
+create vertex 0 -27500 0
+create vertex -13000 0 0
+curve 13 copy reflect y
+curve 13 copy reflect x
+curve 14 copy reflect x
+create surface curve 13 14 15 16
+delete vertex 7
+sweep surface 9 direction 0 0 1 distance -26000
+# Move out of the way
+volume 2 move x {CR_x_shift} y {CR_y_shift} z {3*source_depth}
+# create the inner CR elliptical prism
+create vertex 0 0 0
+create vertex 0 -24750 0
+create vertex -11700 0 0
+curve 25 copy reflect y
+curve 25 copy reflect x
+curve 26 copy reflect x
+create surface curve 25 26 27 28
+delete vertex 20
+sweep surface 15 direction 0 0 1 distance -19000
+volume 3 move x 0 y 0 z {3*source_depth}
+create brick x {sizeX} y {sizeY} z {sizeZ}
+volume 4 move x 0 y 0 z {-0.5*sizeZ}
+#move volumes back and subtract
+volume 2 move copy x 0 y 0 z {-3*source_depth-CR_depth/2}
+subtract volume 5 from 4
+volume 2 move x 0 y 0 z {-3*source_depth-CR_depth/2}
+volume 3 move copy x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+subtract volume 7 from 2
+volume 3 move x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+volume 1 move x 0 y 0 z {-2*source_depth}
+subtract volume 1 from 3
+merge all
+compress all
+#cut domain into layers
+webcut volume 1 with plane zplane offset {-upperCrustHeight}
+imprint volume 1 with volume 2
+webcut volume 4 with plane zplane offset {-upperCrustHeight-lowerCrustHeight}
+merge all
+compress all
+reset
+undo off
+reset
+undo off
+cd "/home/grantblock/Research/Yellowstone/Mesh/nested_CR/run230_run2"
+# ----------------------------------------------------------------------
+# Set units to SI
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Set  geometry parameters
+# ----------------------------------------------------------------------
+${CR_depth=4.0*km}
+${inner_CR_depth=5.5*km}
+${source_depth=4.0*km}
+#source and CR parameters
+${base_CR_x_rad = 13.0*km}
+${base_CR_y_rad = 27.5*km}
+${base_CR_z_rad = 2.5*km}
+${CR_x_rad = base_CR_x_rad}
+${CR_y_rad = base_CR_y_rad}
+${CR_height = 26.0*km}
+${inner_CR_x_rad = 0.9*base_CR_x_rad}
+${inner_CR_y_rad = 0.9*base_CR_y_rad}
+${inner_CR_height = 19.0*km}
+${source_x_rad=0.25*base_CR_x_rad}
+${source_y_rad=0.25*base_CR_y_rad}
+${source_z_rad=0.25*base_CR_z_rad}
+${source_x_shift = 0.0*km}
+${source_y_shift = 0.0*km}
+${CR_x_shift =0.0*km}
+${CR_y_shift = 0.0*km}
+# Domain size parameters
+${sizeX=200.0*km}
+${sizeY=200.0*km}
+${sizeZ=100.0*km}
+${upperCrustHeight=5*km}
+${lowerCrustHeight=45*km}
+${lithosphericMantleHeight=50*km}
+#${asthenosphereHeight=100*km}
+#------------------------------------------------------------------------
+# Create ellipsoidal magma chamber
+#------------------------------------------------------------------------
+create vertex 0 0 0
+create vertex 0 -6875 0
+create vertex 0 0 -625
+create vertex -3250 0 0
+curve 1 copy reflect z
+curve 2 copy reflect z
+create curve vertex 3 7
+create surface curve 3 4 6
+create surface curve 1 2 6
+merge all
+body 1 copy reflect x
+body 2 copy reflect x
+body 1 copy reflect y
+body 3 copy reflect y
+body 2 copy reflect y
+body 4 copy reflect y
+create volume surface 1 2 3 4 5 6 7 8 heal
+delete vertex 1
+delete curve 5
+compress all
+# Move out of the way
+volume 1 move x {source_x_shift} y {source_y_shift} z {source_depth}
+#----------------------------------------------------------------------------
+# Create the domain, a block with a large ellipsoidal
+# CR
+#----------------------------------------------------------------------------
+# create the CR eliptical prism
+create vertex 0 0 0
+create vertex 0 -27500 0
+create vertex -13000 0 0
+curve 13 copy reflect y
+curve 13 copy reflect x
+curve 14 copy reflect x
+create surface curve 13 14 15 16
+delete vertex 7
+sweep surface 9 direction 0 0 1 distance -26000
+# Move out of the way
+volume 2 move x {CR_x_shift} y {CR_y_shift} z {3*source_depth}
+# create the inner CR elliptical prism
+create vertex 0 0 0
+create vertex 0 -24750 0
+create vertex -11700 0 0
+curve 25 copy reflect y
+curve 25 copy reflect x
+curve 26 copy reflect x
+create surface curve 25 26 27 28
+delete vertex 20
+sweep surface 15 direction 0 0 1 distance -19000
+volume 3 move x 0 y 0 z {3*source_depth}
+create brick x {sizeX} y {sizeY} z {sizeZ}
+volume 4 move x 0 y 0 z {-0.5*sizeZ}
+#move volumes back and subtract
+volume 2 move copy x 0 y 0 z {-3*source_depth-CR_depth/2}
+subtract volume 5 from 4
+volume 2 move x 0 y 0 z {-3*source_depth-CR_depth/2}
+volume 3 move copy x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+subtract volume 7 from 2
+volume 3 move x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+volume 1 move x 0 y 0 z {-2*source_depth}
+subtract volume 1 from 3
+merge all
+compress all
+#cut domain into layers
+webcut volume 1 with plane zplane offset {-upperCrustHeight}
+imprint volume 1 with volume 2
+webcut volume 4 with plane zplane offset {-upperCrustHeight-lowerCrustHeight}
+merge all
+compress all
+#---------------------------------------------------------------------------
+# Set element sizes and mesh the geometry
+#---------------------------------------------------------------------------
+${maxCellSize=20.0*km}
+volume all size {maxCellSize}
+volume all scheme tetmesh
+mesh surface all
+mesh volume all
+#Export temp exodus file
+set large exodus file off
+block 1 volume all
+export mesh "temp_mesh.exo" dimension 3 overwrite
+reset
+undo off
+cd "/home/grantblock/Research/Yellowstone/Mesh/nested_CR/run230_run2"
+# ----------------------------------------------------------------------
+# Set units to SI
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Set  geometry parameters
+# ----------------------------------------------------------------------
+${CR_depth=4.0*km}
+${inner_CR_depth=5.5*km}
+${source_depth=4.0*km}
+#source and CR parameters
+${base_CR_x_rad = 13.0*km}
+${base_CR_y_rad = 27.5*km}
+${base_CR_z_rad = 2.5*km}
+${CR_x_rad = base_CR_x_rad}
+${CR_y_rad = base_CR_y_rad}
+${CR_height = 26.0*km}
+${inner_CR_x_rad = 0.9*base_CR_x_rad}
+${inner_CR_y_rad = 0.9*base_CR_y_rad}
+${inner_CR_height = 19.0*km}
+${source_x_rad=0.25*base_CR_x_rad}
+${source_y_rad=0.25*base_CR_y_rad}
+${source_z_rad=0.25*base_CR_z_rad}
+${source_x_shift = 0.0*km}
+${source_y_shift = 0.0*km}
+${CR_x_shift =0.0*km}
+${CR_y_shift = 0.0*km}
+# Domain size parameters
+${sizeX=200.0*km}
+${sizeY=200.0*km}
+${sizeZ=100.0*km}
+${upperCrustHeight=10*km}
+${lowerCrustHeight=40*km}
+${lithosphericMantleHeight=50*km}
+#${asthenosphereHeight=100*km}
+#------------------------------------------------------------------------
+# Create ellipsoidal magma chamber
+#------------------------------------------------------------------------
+create vertex 0 0 0
+create vertex 0 -6875 0
+create vertex 0 0 -625
+create vertex -3250 0 0
+curve 1 copy reflect z
+curve 2 copy reflect z
+create curve vertex 3 7
+create surface curve 3 4 6
+create surface curve 1 2 6
+merge all
+body 1 copy reflect x
+body 2 copy reflect x
+body 1 copy reflect y
+body 3 copy reflect y
+body 2 copy reflect y
+body 4 copy reflect y
+create volume surface 1 2 3 4 5 6 7 8 heal
+delete vertex 1
+delete curve 5
+compress all
+# Move out of the way
+volume 1 move x {source_x_shift} y {source_y_shift} z {source_depth}
+#----------------------------------------------------------------------------
+# Create the domain, a block with a large ellipsoidal
+# CR
+#----------------------------------------------------------------------------
+# create the CR eliptical prism
+create vertex 0 0 0
+create vertex 0 -27500 0
+create vertex -13000 0 0
+curve 13 copy reflect y
+curve 13 copy reflect x
+curve 14 copy reflect x
+create surface curve 13 14 15 16
+delete vertex 7
+sweep surface 9 direction 0 0 1 distance -26000
+# Move out of the way
+volume 2 move x {CR_x_shift} y {CR_y_shift} z {3*source_depth}
+# create the inner CR elliptical prism
+create vertex 0 0 0
+create vertex 0 -24750 0
+create vertex -11700 0 0
+curve 25 copy reflect y
+curve 25 copy reflect x
+curve 26 copy reflect x
+create surface curve 25 26 27 28
+delete vertex 20
+sweep surface 15 direction 0 0 1 distance -19000
+volume 3 move x 0 y 0 z {3*source_depth}
+create brick x {sizeX} y {sizeY} z {sizeZ}
+volume 4 move x 0 y 0 z {-0.5*sizeZ}
+#move volumes back and subtract
+volume 2 move copy x 0 y 0 z {-3*source_depth-CR_depth/2}
+subtract volume 5 from 4
+volume 2 move x 0 y 0 z {-3*source_depth-CR_depth/2}
+volume 3 move copy x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+subtract volume 7 from 2
+volume 3 move x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+volume 1 move x 0 y 0 z {-2*source_depth}
+subtract volume 1 from 3
+merge all
+compress all
+#cut domain into layers
+webcut volume 1 with plane zplane offset {-upperCrustHeight}
+imprint volume 1 with volume 2
+webcut volume 4 with plane zplane offset {-upperCrustHeight-lowerCrustHeight}
+merge all
+compress all
+reset
+undo off
+reset
+undo off
+cd "/home/grantblock/Research/Yellowstone/Mesh/nested_CR/run230_run2"
+# ----------------------------------------------------------------------
+# Set units to SI
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Set  geometry parameters
+# ----------------------------------------------------------------------
+${CR_depth=4.0*km}
+${inner_CR_depth=5.5*km}
+${source_depth=4.0*km}
+#source and CR parameters
+${base_CR_x_rad = 13.0*km}
+${base_CR_y_rad = 27.5*km}
+${base_CR_z_rad = 2.5*km}
+${CR_x_rad = base_CR_x_rad}
+${CR_y_rad = base_CR_y_rad}
+${CR_height = 26.0*km}
+${inner_CR_x_rad = 0.9*base_CR_x_rad}
+${inner_CR_y_rad = 0.9*base_CR_y_rad}
+${inner_CR_height = 19.0*km}
+${source_x_rad=0.25*base_CR_x_rad}
+${source_y_rad=0.25*base_CR_y_rad}
+${source_z_rad=0.25*base_CR_z_rad}
+${source_x_shift = 0.0*km}
+${source_y_shift = 0.0*km}
+${CR_x_shift =0.0*km}
+${CR_y_shift = 0.0*km}
+# Domain size parameters
+${sizeX=200.0*km}
+${sizeY=200.0*km}
+${sizeZ=100.0*km}
+${upperCrustHeight=10*km}
+${lowerCrustHeight=40*km}
+${lithosphericMantleHeight=50*km}
+#${asthenosphereHeight=100*km}
+#------------------------------------------------------------------------
+# Create ellipsoidal magma chamber
+#------------------------------------------------------------------------
+create vertex 0 0 0
+create vertex 0 -6875 0
+create vertex 0 0 -625
+create vertex -3250 0 0
+curve 1 copy reflect z
+curve 2 copy reflect z
+create curve vertex 3 7
+create surface curve 3 4 6
+create surface curve 1 2 6
+merge all
+body 1 copy reflect x
+body 2 copy reflect x
+body 1 copy reflect y
+body 3 copy reflect y
+body 2 copy reflect y
+body 4 copy reflect y
+create volume surface 1 2 3 4 5 6 7 8 heal
+delete vertex 1
+delete curve 5
+compress all
+# Move out of the way
+volume 1 move x {source_x_shift} y {source_y_shift} z {source_depth}
+#----------------------------------------------------------------------------
+# Create the domain, a block with a large ellipsoidal
+# CR
+#----------------------------------------------------------------------------
+# create the CR eliptical prism
+create vertex 0 0 0
+create vertex 0 -27500 0
+create vertex -13000 0 0
+curve 13 copy reflect y
+curve 13 copy reflect x
+curve 14 copy reflect x
+create surface curve 13 14 15 16
+delete vertex 7
+sweep surface 9 direction 0 0 1 distance -26000
+# Move out of the way
+volume 2 move x {CR_x_shift} y {CR_y_shift} z {3*source_depth}
+# create the inner CR elliptical prism
+create vertex 0 0 0
+create vertex 0 -24750 0
+create vertex -11700 0 0
+curve 25 copy reflect y
+curve 25 copy reflect x
+curve 26 copy reflect x
+create surface curve 25 26 27 28
+delete vertex 20
+sweep surface 15 direction 0 0 1 distance -19000
+volume 3 move x 0 y 0 z {3*source_depth}
+create brick x {sizeX} y {sizeY} z {sizeZ}
+volume 4 move x 0 y 0 z {-0.5*sizeZ}
+#move volumes back and subtract
+volume 2 move copy x 0 y 0 z {-3*source_depth-CR_depth/2}
+subtract volume 5 from 4
+volume 2 move x 0 y 0 z {-3*source_depth-CR_depth/2}
+volume 3 move copy x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+subtract volume 7 from 2
+volume 3 move x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+volume 1 move x 0 y 0 z {-2*source_depth}
+subtract volume 1 from 3
+merge all
+compress all
+#cut domain into layers
+webcut volume 1 with plane zplane offset {-upperCrustHeight}
+imprint volume 1 with volume 2
+webcut volume 4 with plane zplane offset {-upperCrustHeight-lowerCrustHeight}
+merge all
+compress all
+#---------------------------------------------------------------------------
+# Set element sizes and mesh the geometry
+#---------------------------------------------------------------------------
+${maxCellSize=20.0*km}
+volume all size {maxCellSize}
+volume all scheme tetmesh
+mesh surface all
+mesh volume all
+#Export temp exodus file
+set large exodus file off
+block 1 volume all
+export mesh "temp_mesh.exo" dimension 3 overwrite
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+reset
+undo off
+cd "/home/grantblock/Research/Yellowstone/Mesh/nested_CR/run230_run2"
+# ----------------------------------------------------------------------
+# Set units to SI
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Set  geometry parameters
+# ----------------------------------------------------------------------
+${CR_depth=4.0*km}
+${inner_CR_depth=5.5*km}
+${source_depth=4.0*km}
+#source and CR parameters
+${base_CR_x_rad = 13.0*km}
+${base_CR_y_rad = 27.5*km}
+${base_CR_z_rad = 2.5*km}
+${CR_x_rad = base_CR_x_rad}
+${CR_y_rad = base_CR_y_rad}
+${CR_height = 26.0*km}
+${inner_CR_x_rad = 0.9*base_CR_x_rad}
+${inner_CR_y_rad = 0.9*base_CR_y_rad}
+${inner_CR_height = 19.0*km}
+${source_x_rad=0.25*base_CR_x_rad}
+${source_y_rad=0.25*base_CR_y_rad}
+${source_z_rad=0.25*base_CR_z_rad}
+${source_x_shift = 0.0*km}
+${source_y_shift = 0.0*km}
+${CR_x_shift =0.0*km}
+${CR_y_shift = 0.0*km}
+# Domain size parameters
+${sizeX=200.0*km}
+${sizeY=200.0*km}
+${sizeZ=100.0*km}
+${upperCrustHeight=10*km}
+${lowerCrustHeight=40*km}
+${lithosphericMantleHeight=50*km}
+#${asthenosphereHeight=100*km}
+#------------------------------------------------------------------------
+# Create ellipsoidal magma chamber
+#------------------------------------------------------------------------
+create vertex 0 0 0
+create vertex 0 -6875 0
+create vertex 0 0 -625
+create vertex -3250 0 0
+curve 1 copy reflect z
+curve 2 copy reflect z
+create curve vertex 3 7
+create surface curve 3 4 6
+create surface curve 1 2 6
+merge all
+body 1 copy reflect x
+body 2 copy reflect x
+body 1 copy reflect y
+body 3 copy reflect y
+body 2 copy reflect y
+body 4 copy reflect y
+create volume surface 1 2 3 4 5 6 7 8 heal
+delete vertex 1
+delete curve 5
+compress all
+# Move out of the way
+volume 1 move x {source_x_shift} y {source_y_shift} z {source_depth}
+#----------------------------------------------------------------------------
+# Create the domain, a block with a large ellipsoidal
+# CR
+#----------------------------------------------------------------------------
+# create the CR eliptical prism
+create vertex 0 0 0
+create vertex 0 -27500 0
+create vertex -13000 0 0
+curve 13 copy reflect y
+curve 13 copy reflect x
+curve 14 copy reflect x
+create surface curve 13 14 15 16
+delete vertex 7
+sweep surface 9 direction 0 0 1 distance -26000
+# Move out of the way
+volume 2 move x {CR_x_shift} y {CR_y_shift} z {3*source_depth}
+# create the inner CR elliptical prism
+create vertex 0 0 0
+create vertex 0 -24750 0
+create vertex -11700 0 0
+curve 25 copy reflect y
+curve 25 copy reflect x
+curve 26 copy reflect x
+create surface curve 25 26 27 28
+delete vertex 20
+sweep surface 15 direction 0 0 1 distance -19000
+volume 3 move x 0 y 0 z {3*source_depth}
+create brick x {sizeX} y {sizeY} z {sizeZ}
+volume 4 move x 0 y 0 z {-0.5*sizeZ}
+#move volumes back and subtract
+volume 2 move copy x 0 y 0 z {-3*source_depth-CR_depth/2}
+subtract volume 5 from 4
+volume 2 move x 0 y 0 z {-3*source_depth-CR_depth/2}
+volume 3 move copy x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+subtract volume 7 from 2
+volume 3 move x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+volume 1 move x 0 y 0 z {-2*source_depth}
+subtract volume 1 from 3
+merge all
+compress all
+#cut domain into layers
+webcut volume 1 with plane zplane offset {-upperCrustHeight}
+imprint volume 1 with volume 2
+webcut volume 4 with plane zplane offset {-upperCrustHeight-lowerCrustHeight}
+merge all
+compress all
+#define cell sizes
+${maxCellSize=20.0*km}
+${minCellSize=1.0*km}
+${CRCellSize=5.0*km}
+# ----------------------------------------------------------------------
+# Create tet4 mesh with resolution dictated by 'cell_size_fn'.
+# ----------------------------------------------------------------------
+volume all scheme tetmesh
+import sizing function "temp_mesh.exo" block all variable "cell_size_fn" time 0
+surface 1 size {CRCellSize}
+surface 2 size {CRCellSize}
+surface 3 size {CRCellSize}
+surface 4 size {CRCellSize}
+surface 5 size {CRCellSize}
+surface 6 size {CRCellSize}
+surface 7 size {CRCellSize}
+surface 8 size {CRCellSize}
+surface 9 sizing function type exodus
+surface 10 size {maxCellSize}
+surface 11 size {minCellSize}
+surface 12 size {minCellSize}
+surface 13 size {minCellSize}
+surface 14 size {minCellSize}
+surface 15 size {minCellSize}
+surface 16 size {minCellSize}
+surface 17 size {minCellSize}
+surface 18 size {minCellSize}
+surface 19 sizing function type exodus
+surface 20 size {CRCellSize}
+surface 21 size {CRCellSize}
+surface 22 size {CRCellSize}
+surface 23 size {CRCellSize}
+surface 24 size {maxCellSize}
+surface 25 size {maxCellSize}
+surface 26 size {maxCellSize}
+surface 27 size {maxCellSize}
+surface 28 size {CRCellSize}
+surface 29 size {CRCellSize}
+surface 30 size {CRCellSize}
+surface 31 size {CRCellSize}
+surface 33 size {maxCellSize}
+surface 34 size {maxCellSize}
+surface 35 size {maxCellSize}
+surface 36 size {maxCellSize}
+surface 37 size {maxCellSize}
+surface 38 size {maxCellSize}
+surface 39 size {maxCellSize}
+surface 40 size {maxCellSize}
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+mesh surface all
+mesh volume all
+# ----------------------------------------------------------------------
+# Smooth mesh to improve quality
+# ----------------------------------------------------------------------
+volume all smooth scheme condition number beta 1.8 cpu 10
+surface all smooth scheme condition number beta 1.8 cpu 10
+smooth volume all
+# ----------------------------------------------------------------------------------------------
+# Create Boundary Conditions
+#----------------------------------------------------------------------------------------------
+#Create blocks for materials
+block 1 volume 1
+block 1 name "upperCrust"
+block 2 volume 4
+block 2 name "lowerCrust"
+block 3 volume 3
+block 3 name "viscoelasticCylinder"
+block 4 volume 5
+block 4 name "lithosphericMantle"
+block 5 volume 2
+block 5 name "outerCR"
+merge all
+compress all
+# Chamber nodesets
+group "chamber_top" add node in surface 11 13 15 16
+nodeset 1 chamber_top
+nodeset 1 name "chamber_top"
+group "chamber_bot" add node in surface 12 14 17 18
+nodeset 2 chamber_bot
+nodeset 2 name "chamber_bot"
+# +x face nodeset
+group "face_xpos" add node in surface 27 35 38
+nodeset 3 face_xpos
+nodeset 3 name "face_xpos"
+# -x face nodeset
+group "face_xneg" add node in surface 25 33 40
+nodeset 4 face_xneg
+nodeset 4 name "face_xneg"
+# +y face nodeset
+group "face_ypos" add node in surface 24 36 37
+nodeset 5 face_ypos
+nodeset 5 name "face_ypos"
+# -y face nodeset
+group "face_yneg" add node in surface 26 34 39
+nodeset 6 face_yneg
+nodeset 6 name "face_yneg"
+# +z face nodeset
+group "face_zpos" add node in surface 9
+nodeset 7 face_zpos
+nodeset 7 name "face_zpos"
+# -z face nodeset
+group "face_zneg" add node in surface 10
+nodeset 8 face_zneg
+nodeset 8 name "face_zneg"
+export mesh "run230_run2.exo" dimension 3 overwrite
+reset
+undo off
+cd "/home/grantblock/Research/Yellowstone/Mesh/nested_CR/run230"
+# ----------------------------------------------------------------------
+# Set units to SI
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Set  geometry parameters
+# ----------------------------------------------------------------------
+${CR_depth=4.0*km}
+${inner_CR_depth=5.5*km}
+${source_depth=4.0*km}
+#source and CR parameters
+${base_CR_x_rad = 13.0*km}
+${base_CR_y_rad = 27.5*km}
+${base_CR_z_rad = 2.5*km}
+${CR_x_rad = base_CR_x_rad}
+${CR_y_rad = base_CR_y_rad}
+${CR_height = 26.0*km}
+${inner_CR_x_rad = 0.6*base_CR_x_rad}
+${inner_CR_y_rad = 0.6*base_CR_y_rad}
+${inner_CR_height = 19.0*km}
+${source_x_rad=0.25*base_CR_x_rad}
+${source_y_rad=0.250*base_CR_y_rad}
+${source_z_rad=0.25*base_CR_z_rad}
+${source_x_shift = 0.0*km}
+${source_y_shift = 0.0*km}
+${CR_x_shift =0.0*km}
+${CR_y_shift = 0.0*km}
+# Domain size parameters
+${sizeX=200.0*km}
+${sizeY=200.0*km}
+${sizeZ=100.0*km}
+${upperCrustHeight=10*km}
+${lowerCrustHeight=40*km}
+${lithosphericMantleHeight=50*km}
+#${asthenosphereHeight=100*km}
+#------------------------------------------------------------------------
+# Create ellipsoidal magma chamber
+#------------------------------------------------------------------------
+create vertex 0 0 0
+create vertex 0 -6875 0
+create vertex 0 0 -625
+create vertex -3250 0 0
+curve 1 copy reflect z
+curve 2 copy reflect z
+create curve vertex 3 7
+create surface curve 3 4 6
+create surface curve 1 2 6
+merge all
+body 1 copy reflect x
+body 2 copy reflect x
+body 1 copy reflect y
+body 3 copy reflect y
+body 2 copy reflect y
+body 4 copy reflect y
+create volume surface 1 2 3 4 5 6 7 8 heal
+delete vertex 1
+delete curve 5
+compress all
+# Move out of the way
+volume 1 move x {source_x_shift} y {source_y_shift} z {source_depth}
+#----------------------------------------------------------------------------
+# Create the domain, a block with a large ellipsoidal
+# CR
+#----------------------------------------------------------------------------
+# create the CR eliptical prism
+create vertex 0 0 0
+create vertex 0 -27500 0
+create vertex -13000 0 0
+curve 13 copy reflect y
+curve 13 copy reflect x
+curve 14 copy reflect x
+create surface curve 13 14 15 16
+delete vertex 7
+sweep surface 9 direction 0 0 1 distance -26000
+# Move out of the way
+volume 2 move x {CR_x_shift} y {CR_y_shift} z {3*source_depth}
+# create the inner CR elliptical prism
+create vertex 0 0 0
+create vertex 0 -16500 0
+create vertex -7800 0 0
+curve 25 copy reflect y
+curve 25 copy reflect x
+curve 26 copy reflect x
+create surface curve 25 26 27 28
+delete vertex 20
+sweep surface 15 direction 0 0 1 distance -19000
+volume 3 move x 0 y 0 z {3*source_depth}
+create brick x {sizeX} y {sizeY} z {sizeZ}
+volume 4 move x 0 y 0 z {-0.5*sizeZ}
+#move volumes back and subtract
+volume 2 move copy x 0 y 0 z {-3*source_depth-CR_depth/2}
+subtract volume 5 from 4
+volume 2 move x 0 y 0 z {-3*source_depth-CR_depth/2}
+volume 3 move copy x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+subtract volume 7 from 2
+volume 3 move x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+volume 1 move x 0 y 0 z {-2*source_depth}
+subtract volume 1 from 3
+merge all
+compress all
+#cut domain into layers
+webcut volume 1 with plane zplane offset {-upperCrustHeight}
+imprint volume 1 with volume 2
+webcut volume 4 with plane zplane offset {-upperCrustHeight-lowerCrustHeight}
+merge all
+compress all
+reset
+undo off
+reset
+undo off
+cd "/home/grantblock/Research/Yellowstone/Mesh/nested_CR/run230"
+# ----------------------------------------------------------------------
+# Set units to SI
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Set  geometry parameters
+# ----------------------------------------------------------------------
+${CR_depth=4.0*km}
+${inner_CR_depth=5.5*km}
+${source_depth=4.0*km}
+#source and CR parameters
+${base_CR_x_rad = 13.0*km}
+${base_CR_y_rad = 27.5*km}
+${base_CR_z_rad = 2.5*km}
+${CR_x_rad = base_CR_x_rad}
+${CR_y_rad = base_CR_y_rad}
+${CR_height = 26.0*km}
+${inner_CR_x_rad = 0.6*base_CR_x_rad}
+${inner_CR_y_rad = 0.6*base_CR_y_rad}
+${inner_CR_height = 19.0*km}
+${source_x_rad=0.25*base_CR_x_rad}
+${source_y_rad=0.250*base_CR_y_rad}
+${source_z_rad=0.25*base_CR_z_rad}
+${source_x_shift = 0.0*km}
+${source_y_shift = 0.0*km}
+${CR_x_shift =0.0*km}
+${CR_y_shift = 0.0*km}
+# Domain size parameters
+${sizeX=200.0*km}
+${sizeY=200.0*km}
+${sizeZ=100.0*km}
+${upperCrustHeight=10*km}
+${lowerCrustHeight=40*km}
+${lithosphericMantleHeight=50*km}
+#${asthenosphereHeight=100*km}
+#------------------------------------------------------------------------
+# Create ellipsoidal magma chamber
+#------------------------------------------------------------------------
+create vertex 0 0 0
+create vertex 0 -6875 0
+create vertex 0 0 -625
+create vertex -3250 0 0
+curve 1 copy reflect z
+curve 2 copy reflect z
+create curve vertex 3 7
+create surface curve 3 4 6
+create surface curve 1 2 6
+merge all
+body 1 copy reflect x
+body 2 copy reflect x
+body 1 copy reflect y
+body 3 copy reflect y
+body 2 copy reflect y
+body 4 copy reflect y
+create volume surface 1 2 3 4 5 6 7 8 heal
+delete vertex 1
+delete curve 5
+compress all
+# Move out of the way
+volume 1 move x {source_x_shift} y {source_y_shift} z {source_depth}
+#----------------------------------------------------------------------------
+# Create the domain, a block with a large ellipsoidal
+# CR
+#----------------------------------------------------------------------------
+# create the CR eliptical prism
+create vertex 0 0 0
+create vertex 0 -27500 0
+create vertex -13000 0 0
+curve 13 copy reflect y
+curve 13 copy reflect x
+curve 14 copy reflect x
+create surface curve 13 14 15 16
+delete vertex 7
+sweep surface 9 direction 0 0 1 distance -26000
+# Move out of the way
+volume 2 move x {CR_x_shift} y {CR_y_shift} z {3*source_depth}
+# create the inner CR elliptical prism
+create vertex 0 0 0
+create vertex 0 -16500 0
+create vertex -7800 0 0
+curve 25 copy reflect y
+curve 25 copy reflect x
+curve 26 copy reflect x
+create surface curve 25 26 27 28
+delete vertex 20
+sweep surface 15 direction 0 0 1 distance -19000
+volume 3 move x 0 y 0 z {3*source_depth}
+create brick x {sizeX} y {sizeY} z {sizeZ}
+volume 4 move x 0 y 0 z {-0.5*sizeZ}
+#move volumes back and subtract
+volume 2 move copy x 0 y 0 z {-3*source_depth-CR_depth/2}
+subtract volume 5 from 4
+volume 2 move x 0 y 0 z {-3*source_depth-CR_depth/2}
+volume 3 move copy x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+subtract volume 7 from 2
+volume 3 move x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+volume 1 move x 0 y 0 z {-2*source_depth}
+subtract volume 1 from 3
+merge all
+compress all
+#cut domain into layers
+webcut volume 1 with plane zplane offset {-upperCrustHeight}
+imprint volume 1 with volume 2
+webcut volume 4 with plane zplane offset {-upperCrustHeight-lowerCrustHeight}
+merge all
+compress all
+#---------------------------------------------------------------------------
+# Set element sizes and mesh the geometry
+#---------------------------------------------------------------------------
+${maxCellSize=20.0*km}
+volume all size {maxCellSize}
+volume all scheme tetmesh
+mesh surface all
+mesh volume all
+#Export temp exodus file
+set large exodus file off
+block 1 volume all
+export mesh "temp_mesh.exo" dimension 3 overwrite
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+reset
+undo off
+cd "/home/grantblock/Research/Yellowstone/Mesh/nested_CR/run230"
+# ----------------------------------------------------------------------
+# Set units to SI
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Set  geometry parameters
+# ----------------------------------------------------------------------
+${CR_depth=4.0*km}
+${inner_CR_depth=5.5*km}
+${source_depth=4.0*km}
+#source and CR parameters
+${base_CR_x_rad = 13.0*km}
+${base_CR_y_rad = 27.5*km}
+${base_CR_z_rad = 2.5*km}
+${CR_x_rad = base_CR_x_rad}
+${CR_y_rad = base_CR_y_rad}
+${CR_height = 26.0*km}
+${inner_CR_x_rad = 0.6*base_CR_x_rad}
+${inner_CR_y_rad = 0.6*base_CR_y_rad}
+${inner_CR_height = 19.0*km}
+${source_x_rad=0.25*base_CR_x_rad}
+${source_y_rad=0.250*base_CR_y_rad}
+${source_z_rad=0.25*base_CR_z_rad}
+${source_x_shift = 0.0*km}
+${source_y_shift = 0.0*km}
+${CR_x_shift =0.0*km}
+${CR_y_shift = 0.0*km}
+# Domain size parameters
+${sizeX=200.0*km}
+${sizeY=200.0*km}
+${sizeZ=100.0*km}
+${upperCrustHeight=10*km}
+${lowerCrustHeight=40*km}
+${lithosphericMantleHeight=50*km}
+#${asthenosphereHeight=100*km}
+#------------------------------------------------------------------------
+# Create ellipsoidal magma chamber
+#------------------------------------------------------------------------
+create vertex 0 0 0
+create vertex 0 -6875 0
+create vertex 0 0 -625
+create vertex -3250 0 0
+curve 1 copy reflect z
+curve 2 copy reflect z
+create curve vertex 3 7
+create surface curve 3 4 6
+create surface curve 1 2 6
+merge all
+body 1 copy reflect x
+body 2 copy reflect x
+body 1 copy reflect y
+body 3 copy reflect y
+body 2 copy reflect y
+body 4 copy reflect y
+create volume surface 1 2 3 4 5 6 7 8 heal
+delete vertex 1
+delete curve 5
+compress all
+# Move out of the way
+volume 1 move x {source_x_shift} y {source_y_shift} z {source_depth}
+#----------------------------------------------------------------------------
+# Create the domain, a block with a large ellipsoidal
+# CR
+#----------------------------------------------------------------------------
+# create the CR eliptical prism
+create vertex 0 0 0
+create vertex 0 -27500 0
+create vertex -13000 0 0
+curve 13 copy reflect y
+curve 13 copy reflect x
+curve 14 copy reflect x
+create surface curve 13 14 15 16
+delete vertex 7
+sweep surface 9 direction 0 0 1 distance -26000
+# Move out of the way
+volume 2 move x {CR_x_shift} y {CR_y_shift} z {3*source_depth}
+# create the inner CR elliptical prism
+create vertex 0 0 0
+create vertex 0 -16500 0
+create vertex -7800 0 0
+curve 25 copy reflect y
+curve 25 copy reflect x
+curve 26 copy reflect x
+create surface curve 25 26 27 28
+delete vertex 20
+sweep surface 15 direction 0 0 1 distance -19000
+volume 3 move x 0 y 0 z {3*source_depth}
+create brick x {sizeX} y {sizeY} z {sizeZ}
+volume 4 move x 0 y 0 z {-0.5*sizeZ}
+#move volumes back and subtract
+volume 2 move copy x 0 y 0 z {-3*source_depth-CR_depth/2}
+subtract volume 5 from 4
+volume 2 move x 0 y 0 z {-3*source_depth-CR_depth/2}
+volume 3 move copy x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+subtract volume 7 from 2
+volume 3 move x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+volume 1 move x 0 y 0 z {-2*source_depth}
+subtract volume 1 from 3
+merge all
+compress all
+#cut domain into layers
+webcut volume 1 with plane zplane offset {-upperCrustHeight}
+imprint volume 1 with volume 2
+webcut volume 4 with plane zplane offset {-upperCrustHeight-lowerCrustHeight}
+merge all
+compress all
+#define cell sizes
+${maxCellSize=20.0*km}
+${minCellSize=1.0*km}
+${CRCellSize=5.0*km}
+# ----------------------------------------------------------------------
+# Create tet4 mesh with resolution dictated by 'cell_size_fn'.
+# ----------------------------------------------------------------------
+volume all scheme tetmesh
+import sizing function "temp_mesh.exo" block all variable "cell_size_fn" time 0
+surface 1 size {CRCellSize}
+surface 2 size {CRCellSize}
+surface 3 size {CRCellSize}
+surface 4 size {CRCellSize}
+surface 5 size {CRCellSize}
+surface 6 size {CRCellSize}
+surface 7 size {CRCellSize}
+surface 8 size {CRCellSize}
+surface 9 sizing function type exodus
+surface 10 size {maxCellSize}
+surface 11 size {minCellSize}
+surface 12 size {minCellSize}
+surface 13 size {minCellSize}
+surface 14 size {minCellSize}
+surface 15 size {minCellSize}
+surface 16 size {minCellSize}
+surface 17 size {minCellSize}
+surface 18 size {minCellSize}
+surface 19 sizing function type exodus
+surface 20 size {CRCellSize}
+surface 21 size {CRCellSize}
+surface 22 size {CRCellSize}
+surface 23 size {CRCellSize}
+surface 24 size {maxCellSize}
+surface 25 size {maxCellSize}
+surface 26 size {maxCellSize}
+surface 27 size {maxCellSize}
+surface 28 size {CRCellSize}
+surface 29 size {CRCellSize}
+surface 30 size {CRCellSize}
+surface 31 size {CRCellSize}
+surface 33 size {maxCellSize}
+surface 34 size {maxCellSize}
+surface 35 size {maxCellSize}
+surface 36 size {maxCellSize}
+surface 37 size {maxCellSize}
+surface 38 size {maxCellSize}
+surface 39 size {maxCellSize}
+surface 40 size {maxCellSize}
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+mesh surface all
+mesh volume all
+# ----------------------------------------------------------------------
+# Smooth mesh to improve quality
+# ----------------------------------------------------------------------
+volume all smooth scheme condition number beta 1.8 cpu 10
+surface all smooth scheme condition number beta 1.8 cpu 10
+smooth volume all
+# ----------------------------------------------------------------------------------------------
+# Create Boundary Conditions
+#----------------------------------------------------------------------------------------------
+#Create blocks for materials
+block 1 volume 1
+block 1 name "upperCrust"
+block 2 volume 4
+block 2 name "lowerCrust"
+block 3 volume 3
+block 3 name "viscoelasticCylinder"
+block 4 volume 5
+block 4 name "lithosphericMantle"
+block 5 volume 2
+block 5 name "outerCR"
+merge all
+compress all
+# Chamber nodesets
+group "chamber_top" add node in surface 11 13 15 16
+nodeset 1 chamber_top
+nodeset 1 name "chamber_top"
+group "chamber_bot" add node in surface 12 14 17 18
+nodeset 2 chamber_bot
+nodeset 2 name "chamber_bot"
+# +x face nodeset
+group "face_xpos" add node in surface 27 35 38
+nodeset 3 face_xpos
+nodeset 3 name "face_xpos"
+# -x face nodeset
+group "face_xneg" add node in surface 25 33 40
+nodeset 4 face_xneg
+nodeset 4 name "face_xneg"
+# +y face nodeset
+group "face_ypos" add node in surface 24 36 37
+nodeset 5 face_ypos
+nodeset 5 name "face_ypos"
+# -y face nodeset
+group "face_yneg" add node in surface 26 34 39
+nodeset 6 face_yneg
+nodeset 6 name "face_yneg"
+# +z face nodeset
+group "face_zpos" add node in surface 9
+nodeset 7 face_zpos
+nodeset 7 name "face_zpos"
+# -z face nodeset
+group "face_zneg" add node in surface 10
+nodeset 8 face_zneg
+nodeset 8 name "face_zneg"
+export mesh "run230.exo" dimension 3 overwrite
+reset
+undo off
+cd "/home/grantblock/Research/Yellowstone/Mesh/nested_CR/run230_run3"
+# ----------------------------------------------------------------------
+# Set units to SI
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Set  geometry parameters
+# ----------------------------------------------------------------------
+${CR_depth=4.0*km}
+${inner_CR_depth=5.5*km}
+${source_depth=6.5*km}
+#source and CR parameters
+${base_CR_x_rad = 13.0*km}
+${base_CR_y_rad = 27.5*km}
+${base_CR_z_rad = 2.5*km}
+${CR_x_rad = base_CR_x_rad}
+${CR_y_rad = base_CR_y_rad}
+${CR_height = 26.0*km}
+${inner_CR_x_rad = 0.6*base_CR_x_rad}
+${inner_CR_y_rad = 0.6*base_CR_y_rad}
+${inner_CR_height = 19.0*km}
+${source_x_rad=0.25*base_CR_x_rad}
+${source_y_rad=0.25*base_CR_y_rad}
+${source_z_rad=0.25*base_CR_z_rad}
+${source_x_shift = 0.0*km}
+${source_y_shift = 0.0*km}
+${CR_x_shift =0.0*km}
+${CR_y_shift = 0.0*km}
+# Domain size parameters
+${sizeX=200.0*km}
+${sizeY=200.0*km}
+${sizeZ=100.0*km}
+${upperCrustHeight=10*km}
+${lowerCrustHeight=40*km}
+${lithosphericMantleHeight=50*km}
+#${asthenosphereHeight=100*km}
+#------------------------------------------------------------------------
+# Create ellipsoidal magma chamber
+#------------------------------------------------------------------------
+create vertex 0 0 0
+create vertex 0 -6875 0
+create vertex 0 0 -625
+create vertex -3250 0 0
+curve 1 copy reflect z
+curve 2 copy reflect z
+create curve vertex 3 7
+create surface curve 3 4 6
+create surface curve 1 2 6
+merge all
+body 1 copy reflect x
+body 2 copy reflect x
+body 1 copy reflect y
+body 3 copy reflect y
+body 2 copy reflect y
+body 4 copy reflect y
+create volume surface 1 2 3 4 5 6 7 8 heal
+delete vertex 1
+delete curve 5
+compress all
+# Move out of the way
+volume 1 move x {source_x_shift} y {source_y_shift} z {source_depth}
+#----------------------------------------------------------------------------
+# Create the domain, a block with a large ellipsoidal
+# CR
+#----------------------------------------------------------------------------
+# create the CR eliptical prism
+create vertex 0 0 0
+create vertex 0 -27500 0
+create vertex -13000 0 0
+curve 13 copy reflect y
+curve 13 copy reflect x
+curve 14 copy reflect x
+create surface curve 13 14 15 16
+delete vertex 7
+sweep surface 9 direction 0 0 1 distance -26000
+# Move out of the way
+volume 2 move x {CR_x_shift} y {CR_y_shift} z {3*source_depth}
+# create the inner CR elliptical prism
+create vertex 0 0 0
+create vertex 0 -16500 0
+create vertex -7800 0 0
+curve 25 copy reflect y
+curve 25 copy reflect x
+curve 26 copy reflect x
+create surface curve 25 26 27 28
+delete vertex 20
+sweep surface 15 direction 0 0 1 distance -19000
+volume 3 move x 0 y 0 z {3*source_depth}
+create brick x {sizeX} y {sizeY} z {sizeZ}
+volume 4 move x 0 y 0 z {-0.5*sizeZ}
+#move volumes back and subtract
+volume 2 move copy x 0 y 0 z {-3*source_depth-CR_depth/2}
+subtract volume 5 from 4
+volume 2 move x 0 y 0 z {-3*source_depth-CR_depth/2}
+volume 3 move copy x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+subtract volume 7 from 2
+volume 3 move x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+volume 1 move x 0 y 0 z {-2*source_depth}
+subtract volume 1 from 3
+merge all
+compress all
+#cut domain into layers
+webcut volume 1 with plane zplane offset {-upperCrustHeight}
+imprint volume 1 with volume 2
+webcut volume 4 with plane zplane offset {-upperCrustHeight-lowerCrustHeight}
+merge all
+compress all
+reset
+undo off
+reset
+undo off
+cd "/home/grantblock/Research/Yellowstone/Mesh/nested_CR/run230_run3"
+# ----------------------------------------------------------------------
+# Set units to SI
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Set  geometry parameters
+# ----------------------------------------------------------------------
+${CR_depth=4.0*km}
+${inner_CR_depth=5.5*km}
+${source_depth=6.5*km}
+#source and CR parameters
+${base_CR_x_rad = 13.0*km}
+${base_CR_y_rad = 27.5*km}
+${base_CR_z_rad = 2.5*km}
+${CR_x_rad = base_CR_x_rad}
+${CR_y_rad = base_CR_y_rad}
+${CR_height = 26.0*km}
+${inner_CR_x_rad = 0.6*base_CR_x_rad}
+${inner_CR_y_rad = 0.6*base_CR_y_rad}
+${inner_CR_height = 19.0*km}
+${source_x_rad=0.25*base_CR_x_rad}
+${source_y_rad=0.25*base_CR_y_rad}
+${source_z_rad=0.25*base_CR_z_rad}
+${source_x_shift = 0.0*km}
+${source_y_shift = 0.0*km}
+${CR_x_shift =0.0*km}
+${CR_y_shift = 0.0*km}
+# Domain size parameters
+${sizeX=200.0*km}
+${sizeY=200.0*km}
+${sizeZ=100.0*km}
+${upperCrustHeight=10*km}
+${lowerCrustHeight=40*km}
+${lithosphericMantleHeight=50*km}
+#${asthenosphereHeight=100*km}
+#------------------------------------------------------------------------
+# Create ellipsoidal magma chamber
+#------------------------------------------------------------------------
+create vertex 0 0 0
+create vertex 0 -6875 0
+create vertex 0 0 -625
+create vertex -3250 0 0
+curve 1 copy reflect z
+curve 2 copy reflect z
+create curve vertex 3 7
+create surface curve 3 4 6
+create surface curve 1 2 6
+merge all
+body 1 copy reflect x
+body 2 copy reflect x
+body 1 copy reflect y
+body 3 copy reflect y
+body 2 copy reflect y
+body 4 copy reflect y
+create volume surface 1 2 3 4 5 6 7 8 heal
+delete vertex 1
+delete curve 5
+compress all
+# Move out of the way
+volume 1 move x {source_x_shift} y {source_y_shift} z {source_depth}
+#----------------------------------------------------------------------------
+# Create the domain, a block with a large ellipsoidal
+# CR
+#----------------------------------------------------------------------------
+# create the CR eliptical prism
+create vertex 0 0 0
+create vertex 0 -27500 0
+create vertex -13000 0 0
+curve 13 copy reflect y
+curve 13 copy reflect x
+curve 14 copy reflect x
+create surface curve 13 14 15 16
+delete vertex 7
+sweep surface 9 direction 0 0 1 distance -26000
+# Move out of the way
+volume 2 move x {CR_x_shift} y {CR_y_shift} z {3*source_depth}
+# create the inner CR elliptical prism
+create vertex 0 0 0
+create vertex 0 -16500 0
+create vertex -7800 0 0
+curve 25 copy reflect y
+curve 25 copy reflect x
+curve 26 copy reflect x
+create surface curve 25 26 27 28
+delete vertex 20
+sweep surface 15 direction 0 0 1 distance -19000
+volume 3 move x 0 y 0 z {3*source_depth}
+create brick x {sizeX} y {sizeY} z {sizeZ}
+volume 4 move x 0 y 0 z {-0.5*sizeZ}
+#move volumes back and subtract
+volume 2 move copy x 0 y 0 z {-3*source_depth-CR_depth/2}
+subtract volume 5 from 4
+volume 2 move x 0 y 0 z {-3*source_depth-CR_depth/2}
+volume 3 move copy x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+subtract volume 7 from 2
+volume 3 move x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+volume 1 move x 0 y 0 z {-2*source_depth}
+subtract volume 1 from 3
+merge all
+compress all
+#cut domain into layers
+webcut volume 1 with plane zplane offset {-upperCrustHeight}
+imprint volume 1 with volume 2
+webcut volume 4 with plane zplane offset {-upperCrustHeight-lowerCrustHeight}
+merge all
+compress all
+#---------------------------------------------------------------------------
+# Set element sizes and mesh the geometry
+#---------------------------------------------------------------------------
+${maxCellSize=20.0*km}
+volume all size {maxCellSize}
+volume all scheme tetmesh
+mesh surface all
+mesh volume all
+#Export temp exodus file
+set large exodus file off
+block 1 volume all
+export mesh "temp_mesh.exo" dimension 3 overwrite
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+reset
+undo off
+cd "/home/grantblock/Research/Yellowstone/Mesh/nested_CR/run230_run3"
+# ----------------------------------------------------------------------
+# Set units to SI
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Set  geometry parameters
+# ----------------------------------------------------------------------
+${CR_depth=4.0*km}
+${inner_CR_depth=5.5*km}
+${source_depth=6.5*km}
+#source and CR parameters
+${base_CR_x_rad = 13.0*km}
+${base_CR_y_rad = 27.5*km}
+${base_CR_z_rad = 2.5*km}
+${CR_x_rad = base_CR_x_rad}
+${CR_y_rad = base_CR_y_rad}
+${CR_height = 26.0*km}
+${inner_CR_x_rad = 0.6*base_CR_x_rad}
+${inner_CR_y_rad = 0.6*base_CR_y_rad}
+${inner_CR_height = 19.0*km}
+${source_x_rad=0.25*base_CR_x_rad}
+${source_y_rad=0.25*base_CR_y_rad}
+${source_z_rad=0.25*base_CR_z_rad}
+${source_x_shift = 0.0*km}
+${source_y_shift = 0.0*km}
+${CR_x_shift =0.0*km}
+${CR_y_shift = 0.0*km}
+# Domain size parameters
+${sizeX=200.0*km}
+${sizeY=200.0*km}
+${sizeZ=100.0*km}
+${upperCrustHeight=10*km}
+${lowerCrustHeight=40*km}
+${lithosphericMantleHeight=50*km}
+#${asthenosphereHeight=100*km}
+#------------------------------------------------------------------------
+# Create ellipsoidal magma chamber
+#------------------------------------------------------------------------
+create vertex 0 0 0
+create vertex 0 -6875 0
+create vertex 0 0 -625
+create vertex -3250 0 0
+curve 1 copy reflect z
+curve 2 copy reflect z
+create curve vertex 3 7
+create surface curve 3 4 6
+create surface curve 1 2 6
+merge all
+body 1 copy reflect x
+body 2 copy reflect x
+body 1 copy reflect y
+body 3 copy reflect y
+body 2 copy reflect y
+body 4 copy reflect y
+create volume surface 1 2 3 4 5 6 7 8 heal
+delete vertex 1
+delete curve 5
+compress all
+# Move out of the way
+volume 1 move x {source_x_shift} y {source_y_shift} z {source_depth}
+#----------------------------------------------------------------------------
+# Create the domain, a block with a large ellipsoidal
+# CR
+#----------------------------------------------------------------------------
+# create the CR eliptical prism
+create vertex 0 0 0
+create vertex 0 -27500 0
+create vertex -13000 0 0
+curve 13 copy reflect y
+curve 13 copy reflect x
+curve 14 copy reflect x
+create surface curve 13 14 15 16
+delete vertex 7
+sweep surface 9 direction 0 0 1 distance -26000
+# Move out of the way
+volume 2 move x {CR_x_shift} y {CR_y_shift} z {3*source_depth}
+# create the inner CR elliptical prism
+create vertex 0 0 0
+create vertex 0 -16500 0
+create vertex -7800 0 0
+curve 25 copy reflect y
+curve 25 copy reflect x
+curve 26 copy reflect x
+create surface curve 25 26 27 28
+delete vertex 20
+sweep surface 15 direction 0 0 1 distance -19000
+volume 3 move x 0 y 0 z {3*source_depth}
+create brick x {sizeX} y {sizeY} z {sizeZ}
+volume 4 move x 0 y 0 z {-0.5*sizeZ}
+#move volumes back and subtract
+volume 2 move copy x 0 y 0 z {-3*source_depth-CR_depth/2}
+subtract volume 5 from 4
+volume 2 move x 0 y 0 z {-3*source_depth-CR_depth/2}
+volume 3 move copy x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+subtract volume 7 from 2
+volume 3 move x 0 y 0 z {-3*source_depth-inner_CR_depth/2}
+volume 1 move x 0 y 0 z {-2*source_depth}
+subtract volume 1 from 3
+merge all
+compress all
+#cut domain into layers
+webcut volume 1 with plane zplane offset {-upperCrustHeight}
+imprint volume 1 with volume 2
+webcut volume 4 with plane zplane offset {-upperCrustHeight-lowerCrustHeight}
+merge all
+compress all
+#define cell sizes
+${maxCellSize=20.0*km}
+${minCellSize=1.0*km}
+${CRCellSize=5.0*km}
+# ----------------------------------------------------------------------
+# Create tet4 mesh with resolution dictated by 'cell_size_fn'.
+# ----------------------------------------------------------------------
+volume all scheme tetmesh
+import sizing function "temp_mesh.exo" block all variable "cell_size_fn" time 0
+surface 1 size {CRCellSize}
+surface 2 size {CRCellSize}
+surface 3 size {CRCellSize}
+surface 4 size {CRCellSize}
+surface 5 size {CRCellSize}
+surface 6 size {CRCellSize}
+surface 7 size {CRCellSize}
+surface 8 size {CRCellSize}
+surface 9 sizing function type exodus
+surface 10 size {maxCellSize}
+surface 11 size {minCellSize}
+surface 12 size {minCellSize}
+surface 13 size {minCellSize}
+surface 14 size {minCellSize}
+surface 15 size {minCellSize}
+surface 16 size {minCellSize}
+surface 17 size {minCellSize}
+surface 18 size {minCellSize}
+surface 19 sizing function type exodus
+surface 20 size {CRCellSize}
+surface 21 size {CRCellSize}
+surface 22 size {CRCellSize}
+surface 23 size {CRCellSize}
+surface 24 size {maxCellSize}
+surface 25 size {maxCellSize}
+surface 26 size {maxCellSize}
+surface 27 size {maxCellSize}
+surface 28 size {CRCellSize}
+surface 29 size {CRCellSize}
+surface 30 size {CRCellSize}
+surface 31 size {CRCellSize}
+surface 33 size {maxCellSize}
+surface 34 size {maxCellSize}
+surface 35 size {maxCellSize}
+surface 36 size {maxCellSize}
+surface 37 size {maxCellSize}
+surface 38 size {maxCellSize}
+surface 39 size {maxCellSize}
+surface 40 size {maxCellSize}
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+mesh surface all
+mesh volume all
+# ----------------------------------------------------------------------
+# Smooth mesh to improve quality
+# ----------------------------------------------------------------------
+volume all smooth scheme condition number beta 1.8 cpu 10
+surface all smooth scheme condition number beta 1.8 cpu 10
+smooth volume all
+# ----------------------------------------------------------------------------------------------
+# Create Boundary Conditions
+#----------------------------------------------------------------------------------------------
+#Create blocks for materials
+block 1 volume 1
+block 1 name "upperCrust"
+block 2 volume 4
+block 2 name "lowerCrust"
+block 3 volume 3
+block 3 name "viscoelasticCylinder"
+block 4 volume 5
+block 4 name "lithosphericMantle"
+block 5 volume 2
+block 5 name "outerCR"
+merge all
+compress all
+# Chamber nodesets
+group "chamber_top" add node in surface 11 13 15 16
+nodeset 1 chamber_top
+nodeset 1 name "chamber_top"
+group "chamber_bot" add node in surface 12 14 17 18
+nodeset 2 chamber_bot
+nodeset 2 name "chamber_bot"
+# +x face nodeset
+group "face_xpos" add node in surface 27 35 38
+nodeset 3 face_xpos
+nodeset 3 name "face_xpos"
+# -x face nodeset
+group "face_xneg" add node in surface 25 33 40
+nodeset 4 face_xneg
+nodeset 4 name "face_xneg"
+# +y face nodeset
+group "face_ypos" add node in surface 24 36 37
+nodeset 5 face_ypos
+nodeset 5 name "face_ypos"
+# -y face nodeset
+group "face_yneg" add node in surface 26 34 39
+nodeset 6 face_yneg
+nodeset 6 name "face_yneg"
+# +z face nodeset
+group "face_zpos" add node in surface 9
+nodeset 7 face_zpos
+nodeset 7 name "face_zpos"
+# -z face nodeset
+group "face_zneg" add node in surface 10
+nodeset 8 face_zneg
+nodeset 8 name "face_zneg"
+export mesh "run230_run3.exo" dimension 3 overwrite

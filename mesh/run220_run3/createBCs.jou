@@ -1,0 +1,121 @@
+# ----------------------------------------------------------------------------------------------
+# Create Boundary Conditions
+#----------------------------------------------------------------------------------------------
+
+#Create blocks for materials
+
+block 1 volume 1
+block 1 name "upperCrust"
+
+merge all 
+compress all
+
+# Chamber nodesets
+
+group "chamber_top" add node in surface 7 9 11 12
+nodeset 1 chamber_top
+nodeset 1 name "chamber_top"
+
+group "chamber_bot" add node in surface 8 10 13 14
+nodeset 2 chamber_bot
+nodeset 2 name "chamber_bot"
+
+
+
+# +x face nodeset
+
+group "face_xpos" add node in surface 6
+nodeset 3 face_xpos
+nodeset 3 name "face_xpos"
+
+# -x face nodeset
+
+group "face_xneg" add node in surface 4
+nodeset 4 face_xneg
+nodeset 4 name "face_xneg"
+
+# +y face nodeset
+
+group "face_ypos" add node in surface 5
+nodeset 5 face_ypos
+nodeset 5 name "face_ypos"
+
+# -y face nodeset
+
+group "face_yneg" add node in surface 3
+nodeset 6 face_yneg
+nodeset 6 name "face_yneg"
+
+# +z face nodeset
+
+group "face_zpos" add node in surface 1
+nodeset 7 face_zpos
+nodeset 7 name "face_zpos"
+
+# -z face nodeset
+
+group "face_zneg" add node in surface 2
+nodeset 8 face_zneg
+nodeset 8 name "face_zneg"
+
+export mesh "run220_run3.exo" dimension 3 overwrite
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
