@@ -1,0 +1,9 @@
+Uniform CR 
+source x,y =  0.25*13km, 0.25*27.5km source z rad = 0.25*2.5 km.
+CRx,y = 13 km, 27.5 km
+Source depth = 4 km
+UC extends to 10 km.
+LC extends to 50 km. 
+CR height: 26km (extending from 2.0-28.0 km depth)
+No asthenosphere layer - domain height = 100 km
+Smaller domain x, y. Domain dims = (200x200x100) km

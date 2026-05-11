@@ -1,0 +1,94 @@
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+playback 'geometry.jou'
+
+#define cell sizes
+${maxCellSize=25.0*km}
+${CRCellSize=5.0*km}
+${minCellSize=1.0*km}
+# ----------------------------------------------------------------------
+# Create tet4 mesh with resolution dictated by 'cell_size_fn'.
+# ----------------------------------------------------------------------
+volume all scheme tetmesh
+import sizing function  "temp_mesh.exo" block all variable "cell_size_fn" time 0.0000000 
+
+surface 1 sizing function type exodus
+surface 2 sizing function type exodus
+surface 3 sizing function type exodus
+
+surface 4  size {maxCellSize}
+
+surface 5 size {minCellSize}
+surface 6 size {minCellSize}
+surface 7 size {minCellSize}
+surface 8 size {minCellSize}
+surface 9 size {minCellSize}
+surface 10 size {minCellSize}
+surface 11 size {minCellSize}
+surface 12 size {minCellSize}
+
+surface 13 sizing function type exodus
+
+surface 14, 15, 16, 17  sizing function type exodus
+
+surface 18  size {maxCellSize}
+surface 19  size {maxCellSize}
+surface 20  size {maxCellSize}
+surface 21  size {maxCellSize}
+
+surface 22, 23, 24, 25  sizing function type exodus
+
+surface 27  size {maxCellSize}
+surface 28  size {maxCellSize}
+surface 29  size {maxCellSize}
+surface 30  size {maxCellSize}
+surface 31  size {maxCellSize}
+surface 32  size {maxCellSize}
+surface 33  size {maxCellSize}
+surface 34  size {maxCellSize}
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+mesh surface all
+mesh volume all
+
+# ----------------------------------------------------------------------
+# Smooth mesh to improve quality
+# ----------------------------------------------------------------------
+volume all smooth scheme condition number beta 1.8 cpu 10
+surface all smooth scheme condition number beta 1.8 cpu 10
+
+smooth volume all
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

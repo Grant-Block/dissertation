@@ -1,0 +1,169 @@
+reset 
+undo off 
+
+cd "~/Research/Yellowstone/Mesh/uniform_CR/run237"
+
+# ----------------------------------------------------------------------
+# Set units to SI
+# ----------------------------------------------------------------------
+
+${Units('si')}
+
+# ----------------------------------------------------------------------
+# Set  geometry parameters
+# ----------------------------------------------------------------------
+
+${CR_depth=4.0*km}
+${source_depth=4.0*km}
+
+#source and CR parameters
+
+${base_CR_x_rad = 13.0*km}
+${base_CR_y_rad = 27.5*km}
+${base_CR_z_rad = 2.5*km}
+
+${CR_x_rad = base_CR_x_rad}
+${CR_y_rad = base_CR_y_rad}
+${CR_height = 26.0*km}
+
+${source_x_rad=0.25*base_CR_x_rad}
+${source_y_rad=0.25*base_CR_y_rad}
+${source_z_rad=0.25*base_CR_z_rad}
+
+${source_x_shift = 0.0*km}
+${source_y_shift = 0.0*km}
+${CR_x_shift = 0.0*km}
+${CR_y_shift = 0.0*km}
+
+# Domain size parameters
+
+${sizeX=200.0*km}
+${sizeY=200.0*km}
+${sizeZ=100.0*km}
+
+${upperCrustHeight=10*km}
+${lowerCrustHeight=40*km}
+
+${lithosphericMantleHeight=50*km}
+#${asthenosphereHeight=100*km}
+
+#------------------------------------------------------------------------
+# Create ellipsoidal magma chamber
+#------------------------------------------------------------------------
+create vertex 0 0 0
+create vertex 0 -{source_y_rad} 0
+create vertex 0 0 -{source_z_rad}
+create vertex  -{source_x_rad} 0 0 
+
+create curve vertex 2 vertex 3 vertex 1 ellipse
+create curve vertex 4 vertex 3 vertex 1 ellipse
+Curve 1 copy reflect z
+curve 2 copy reflect z
+create curve vertex 3 7
+
+create curve vertex 2  vertex 4 vertex 1 ellipse
+
+create surface curve 3 4 6
+create surface curve 1 2 6
+merge all
+
+body 1 copy reflect x
+body 2 copy reflect x
+body 1 copy reflect y
+body 3 copy reflect y
+body 2 copy reflect y
+body 4 copy reflect y
+
+create volume surface 1 2 3 4 5 6 7 8 HEAL
+
+delete vertex 1
+delete curve 5
+
+compress all
+merge all
+
+# Move out of the way
+
+volume 1 move x {source_x_shift} y {source_y_shift} z {source_depth}
+
+#----------------------------------------------------------------------------
+# Create the domain, a block with a large ellipsoidal
+# CR
+#----------------------------------------------------------------------------
+
+# create the CR ellipsoid
+
+create vertex 0 0 0
+create vertex 0 -{CR_y_rad} 0
+create vertex  -{CR_x_rad} 0 0 
+
+create curve vertex 8 vertex 9 vertex 7 ellipse
+Curve 13 copy reflect y
+curve 13 copy reflect x
+curve 14 copy reflect x
+
+create surface curve 13 14 15 16
+delete vertex 7
+sweep surface 9 direction 0 0 1 distance -{CR_height}
+
+
+# Move out of the way
+volume 2 move x {CR_x_shift} y {CR_y_shift} z {3*source_depth}
+
+
+create brick x {sizeX} y {sizeY} z {sizeZ}
+volume 3 move x 0 y 0 z {-0.5*sizeZ}
+
+#move volumes back and subtract
+volume 2 move copy x 0 y 0 z {-3*source_depth-CR_depth/2}
+subtract volume 4 from 3
+volume 2 move x 0 y 0 z {-3*source_depth-CR_depth/2}
+
+volume 1 move x 0 y 0 z {-2*source_depth}
+subtract volume 1 from 2
+merge all 
+compress all
+
+
+#cut domain into layers
+webcut volume 1 with plane zplane offset {-upperCrustHeight}
+imprint volume 1 with volume 2
+webcut volume 3 with plane zplane offset {-upperCrustHeight-lowerCrustHeight}
+
+merge all 
+compress all
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
