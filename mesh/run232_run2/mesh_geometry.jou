@@ -1,0 +1,46 @@
+reset 
+undo off 
+
+playback 'geometry.jou'
+
+#---------------------------------------------------------------------------
+# Set element sizes and mesh the geometry
+#---------------------------------------------------------------------------
+
+${maxCellSize=20.0*km}
+
+
+volume all size {maxCellSize}
+volume all scheme tetmesh
+
+mesh surface all
+mesh volume all
+
+#Export temp exodus file
+set large exodus off
+block 1 volume all
+export mesh "temp_mesh.exo" dimension 3 overwrite
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

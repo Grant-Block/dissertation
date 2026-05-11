@@ -1,0 +1,103 @@
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+playback 'geometry.jou'
+
+#define cell sizes
+${maxCellSize=20.0*km}
+${minCellSize=1.0*km}
+${CRCellSize=5.0*km}
+# ----------------------------------------------------------------------
+# Create tet4 mesh with resolution dictated by 'cell_size_fn'.
+# ----------------------------------------------------------------------
+volume all scheme tetmesh
+import sizing function  "temp_mesh.exo" block all variable "cell_size_fn" time 0.0000000 
+
+surface 1 size {CRCellSize}
+surface 2 size {CRCellSize}
+surface 3 size {CRCellSize}
+surface 4 size {CRCellSize}
+surface 5 size {CRCellSize}
+surface 6 size {CRCellSize}
+surface 7 size {CRCellSize}
+surface 8 size {CRCellSize}
+
+surface 9 sizing function type exodus
+surface 10  size {maxCellSize}
+
+surface 11 size {minCellSize}
+surface 12 size {minCellSize}
+surface 13 size {minCellSize}
+surface 14 size {minCellSize}
+surface 15 size {minCellSize}
+surface 16 size {minCellSize}
+surface 17 size {minCellSize}
+surface 18 size {minCellSize}
+
+surface 19 sizing function type exodus
+
+surface 20 size {CRCellSize}
+surface 21 size {CRCellSize}
+surface 22 size {CRCellSize}
+surface 23 size {CRCellSize}
+
+surface 24 size {maxCellSize}
+surface 25 size {maxCellSize}
+surface 26 size {maxCellSize}
+surface 27 size {maxCellSize}
+
+surface 28 size {CRCellSize}
+surface 29 size {CRCellSize}
+surface 30 size {CRCellSize}
+surface 31 size {CRCellSize}
+
+surface 33 size {maxCellSize}
+surface 34 size {maxCellSize}
+surface 35 size {maxCellSize}
+surface 36 size {maxCellSize}
+
+surface 37 size {maxCellSize}
+surface 38 size {maxCellSize}
+surface 39 size {maxCellSize}
+surface 40 size {maxCellSize}
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+mesh surface all
+mesh volume all
+
+# ----------------------------------------------------------------------
+# Smooth mesh to improve quality
+# ----------------------------------------------------------------------
+volume all smooth scheme condition number beta 1.8 cpu 10
+surface all smooth scheme condition number beta 1.8 cpu 10
+
+smooth volume all
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
