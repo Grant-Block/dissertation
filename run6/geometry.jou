@@ -1,0 +1,211 @@
+reset 
+undo off 
+
+cd "~/Research/Yellowstone/Mesh/uniform_CR/run6"
+
+# ----------------------------------------------------------------------
+# Set units to SI
+# ----------------------------------------------------------------------
+
+${Units('si')}
+
+# ----------------------------------------------------------------------
+# Set  geometry parameters
+# ----------------------------------------------------------------------
+
+${CR_depth=6.5*km}
+${source_depth=7.875*km}
+
+#source and CR parameters
+
+${CR_x_rad = 13.0*km}
+${CR_y_rad = 27.5*km}
+${CR_z_rad = 2.5*km}
+
+${source_x_rad=0.25*CR_x_rad}
+${source_y_rad=0.25*CR_y_rad}
+${source_z_rad=0.25*CR_z_rad}
+
+# Domain size parameters
+
+${sizeX=300.0*km}
+${sizeY=300.0*km}
+${sizeZ=200.0*km}
+
+${upperCrustHeight=10*km}
+${lowerCrustHeight=20*km}
+
+${lithosphericMantleHeight=70*km}
+${asthenosphereHeight=100*km}
+
+#------------------------------------------------------------------------
+# Create ellipsoidal magma chamber
+#------------------------------------------------------------------------
+create vertex 0 0 0
+create vertex 0 -{source_y_rad} 0
+create vertex 0 0 -{source_z_rad}
+create vertex  -{source_x_rad} 0 0 
+
+create curve vertex 2 vertex 3 vertex 1 ellipse
+create curve vertex 4 vertex 3 vertex 1 ellipse
+Curve 1 copy reflect z
+curve 2 copy reflect z
+create curve vertex 3 7
+
+create curve vertex 2  vertex 4 vertex 1 ellipse
+
+create surface curve 3 4 6
+create surface curve 1 2 6
+merge all
+
+body 1 copy reflect x
+body 2 copy reflect x
+body 1 copy reflect y
+body 3 copy reflect y
+body 2 copy reflect y
+body 4 copy reflect y
+
+create volume surface 1 2 3 4 5 6 7 8 HEAL
+
+delete vertex 1
+delete curve 5
+
+compress all
+merge all
+
+# Move to the SMB depth
+
+volume 1 move x 0 y 0 z {-source_depth}
+
+#----------------------------------------------------------------------------
+# Create the domain, a block with a large ellipsoidal
+# CR
+#----------------------------------------------------------------------------
+
+# create the CR ellipsoid
+
+create vertex 0 0 0
+create vertex 0 -{CR_y_rad} 0
+create vertex 0 0 -{CR_z_rad}
+
+create vertex  -{CR_x_rad} 0 0 
+
+create curve vertex 8 vertex 9 vertex 7 ellipse
+create curve vertex 10 vertex 9 vertex 7 ellipse
+Curve 13 copy reflect z
+curve 14 copy reflect z
+create curve vertex 9 13
+
+create curve vertex 8  vertex 10 vertex 7 ellipse 
+
+create surface curve 15 16 18 
+create surface curve 13 14 18
+merge all
+
+body 2 copy reflect x
+body 3 copy reflect x
+body 2 copy reflect y
+body 4 copy reflect y
+body 3 copy reflect y
+body 5 copy reflect y
+
+create volume surface 9 10 11 12 13 14 15 16 HEAL
+
+delete vertex 7
+delete curve 17
+
+compress all
+merge all
+
+#rotate CR for perpendicular CR mesh
+#Rotate volume 2 about Z angle 90
+
+# Move to CR depth
+volume 2 move x 0 y 0 z {-CR_depth}
+
+
+create brick x {sizeX} y {sizeY} z {sizeZ}
+volume 3 move x 0 y 0 z {-0.5*sizeZ}
+
+# make a hole in the domain where the CR is
+subtract volume 2 from 3
+
+# remake the CR and put it back in the hole
+volume 1 move x 0 y 0 z {-5*sizeZ}
+volume 4 move x 0 y 0 z {-5*sizeZ}
+
+
+create vertex 0 0 0
+create vertex 0 -{CR_y_rad} 0
+create vertex 0 0 -{CR_z_rad}
+create vertex  -{CR_x_rad} 0 0 
+
+create curve vertex 28 vertex 29 vertex 27 ellipse
+create curve vertex 30 vertex 29 vertex 27 ellipse
+Curve 49 copy reflect z
+curve 50 copy reflect z
+create curve vertex 29 33
+
+create curve vertex 28  vertex 30 vertex 27 ellipse
+
+create surface curve 51 52 54
+create surface curve 49 50 54
+merge all
+
+body 4 copy reflect x
+body 5 copy reflect x
+body 4 copy reflect y
+body 6 copy reflect y
+body 5 copy reflect y
+body 7 copy reflect y
+
+create volume surface 31 32 33 34 35 36 37 38 HEAL
+
+delete vertex 27
+delete curve 53
+
+compress all
+merge all
+
+#Rotate CR for perpendicular case
+#Rotate volume 3 about Z angle 90
+
+#move other volumes back
+volume 1 move x 0 y 0 z {5*sizeZ}
+volume 2 move x 0 y 0 z {5*sizeZ}
+volume 3 move x 0 y 0 z {-CR_depth}
+
+compress all
+merge all
+
+#cut domain into layers
+webcut volume 2 with plane zplane offset {-upperCrustHeight}
+webcut volume 2 with plane zplane offset {-upperCrustHeight-lowerCrustHeight}
+webcut volume 5 with plane zplane offset {-upperCrustHeight-lowerCrustHeight-lithosphericMantleHeight}
+
+compress all
+merge all
+
+#------------------------------------------------------------------------------
+# Subtract the volumes to make the chamber hollow
+#------------------------------------------------------------------------------
+
+subtract volume 1 from volume 3
+
+
+merge all 
+compress all
+
+
+
+
+
+
+
+
+
+
+
+
+
+

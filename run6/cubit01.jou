@@ -1,0 +1,655 @@
+## /opt/Trelis-16.1/bin/trelis
+## Trelis Version 16.1.1
+## Trelis Build 1b15f60
+## Revised Tue Aug 23 16:17:41 2016 -0600
+## Running 06/11/2024 09:41:15 AM
+## Command Options:
+# Cubit journal file with geometry for magma reservoir example.
+${Units('si')}
+# Clear model
+undo off
+reset
+# Turn on IDless journal files for maximum compatibility.
+# The commands echoed to the log will replace the object ID with a
+# geometric specification of the object. Note that this means changing
+# the geometry will require changes to subsequent journal commands.
+# Define variables for geometry.
+# Domain
+${length = 20*km}
+${depth  = 20*km}
+${pay = 0.1*km}
+# Magma reservoir
+${major = 5*km}
+${minor  = 1*km}
+# Magma conduit
+${c_length = 1*km}
+${c_depth = 6*km}
+# Domain
+create surface rectangle width {length} height {depth} zplane
+surface {Id("surface")}  move x {length/2} y {depth/-2} z 0
+surface {Id("surface")}  name "domain"
+# reservoir
+create surface ellipse major radius {major} minor radius {minor} on domain
+surface {Id("surface")}  move x {length/2} y {-depth*(2/3)} z 0
+surface {Id("surface")}  name "mirror_reservoir"
+# Conduit
+create surface rectangle width {c_length} height {c_depth} on domain
+surface {Id("surface")}  move x {length/2} y {-depth + c_depth/2} z 0
+surface {Id("surface")}  name "mirror_conduit"
+unite volume  ( at 10000 -13333.3 0 ordinal 1 at 10000 -17000 0 ordinal 1 ordered ) 
+imprint all
+merge all
+delete body  ( at 10000 -16166.7 0 ordinal 1 ordered ) 
+#surface 4 rename "reservoir"
+surface ( at 10000 -16166.7 0 ordinal 1 ordered ) rename "reservoir"
+#surface 5 rename "domain"
+surface ( at 10000 -10000 0 ordinal 1 ordered ) rename "domain"
+#curve 8 name "inflow"
+curve ( at 10000 -20000 0 ordinal 1 ordered ) name "inflow"
+#curve 10 name "west_conduit"
+curve ( at 9500 -17164.2 0 ordinal 1 ordered ) name "west_conduit"
+#curve 11 name "reservoir_interface"
+#curve 12 name "east_conduit"
+# Cubit Journal file for generating mesh with triangular cells.
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+reset
+undo off
+cd "/home/grantblock/Research/Yellowstone/Mesh/uniform_CR/run6"
+# ----------------------------------------------------------------------
+# Set units to SI
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Set  geometry parameters
+# ----------------------------------------------------------------------
+${CR_depth=6.5*km}
+${source_depth=7.875*km}
+#source and CR parameters
+${CR_x_rad = 13.0*km}
+${CR_y_rad = 27.5*km}
+${CR_z_rad = 2.5*km}
+${source_x_rad=0.25*CR_x_rad}
+${source_y_rad=0.25*CR_y_rad}
+${source_z_rad=0.25*CR_z_rad}
+# Domain size parameters
+${sizeX=300.0*km}
+${sizeY=300.0*km}
+${sizeZ=200.0*km}
+${upperCrustHeight=10*km}
+${lowerCrustHeight=20*km}
+${lithosphericMantleHeight=70*km}
+${asthenosphereHeight=100*km}
+#------------------------------------------------------------------------
+# Create ellipsoidal magma chamber
+#------------------------------------------------------------------------
+create vertex 0 0 0
+create vertex 0 -6875 0
+create vertex 0 0 -625
+create vertex -3250 0 0
+curve  ( at 0 -3482.81 -538.867 ordinal 1 ordered )  copy reflect z
+curve  ( at -1698.56 0 -532.848 ordinal 1 ordered )  copy reflect z
+create curve vertex  ( at 0 0 -625 ordinal 1 at 0 0 625 ordinal 1 ordered ) 
+create surface curve  ( at 0 -3482.81 538.867 ordinal 1 at -1698.56 0 532.848 ordinal 1 at -2629.91 -4039.26 0 ordinal 1 ordered ) 
+create surface curve  ( at 0 -3482.81 -538.867 ordinal 1 at -1698.56 0 -532.848 ordinal 1 at -2629.91 -4039.26 0 ordinal 1 ordered ) 
+merge all
+body  ( at -348.843 -737.937 312.643 ordinal 1 ordered )  copy reflect x
+body  ( at -348.843 -737.937 -312.643 ordinal 1 ordered )  copy reflect x
+body  ( at -348.843 -737.937 312.643 ordinal 1 ordered )  copy reflect y
+body  ( at 348.843 -737.937 312.643 ordinal 1 ordered )  copy reflect y
+body  ( at -348.843 -737.937 -312.643 ordinal 1 ordered )  copy reflect y
+body  ( at 348.843 -737.937 -312.643 ordinal 1 ordered )  copy reflect y
+create volume surface  ( at -355.486 -741.034 617.444 ordinal 1 at -355.486 -741.034 -617.444 ordinal 1 at 355.486 -741.034 617.444 ordinal 1 at 355.486 -741.034 -617.444 ordinal 1 at -355.486 741.034 617.444 ordinal 1 at 355.486 741.034 617.444 ordinal 1 at -355.486 741.034 -617.444 ordinal 1 at 355.486 741.034 -617.444 ordinal 1 ordered )  heal
+delete vertex  ( at 0 0 0 ordinal 1 ordered ) 
+delete curve  ( at 0 0 0 ordinal 1 ordered ) 
+compress all
+# Move to the SMB depth
+volume  ( at 0 0 0 ordinal 1 ordered )  move x 0 y 0 z {-source_depth}
+#----------------------------------------------------------------------------
+# Create the domain, a block with a large ellipsoidal
+# CR
+#----------------------------------------------------------------------------
+# create the CR ellipsoid
+create vertex 0 0 0
+create vertex 0 -27500 0
+create vertex 0 0 -2500
+create vertex -13000 0 0
+curve  ( at 0 -13931.2 -2155.47 ordinal 1 ordered )  copy reflect z
+curve  ( at -6794.25 0 -2131.39 ordinal 1 ordered )  copy reflect z
+create curve vertex  ( at 0 0 -2500 ordinal 1 at 0 0 2500 ordinal 1 ordered ) 
+create surface curve  ( at 0 -13931.2 2155.47 ordinal 1 at -6794.25 0 2131.39 ordinal 1 at -10519.6 -16157 0 ordinal 1 ordered ) 
+create surface curve  ( at 0 -13931.2 -2155.47 ordinal 1 at -6794.25 0 -2131.39 ordinal 1 at -10519.6 -16157 0 ordinal 1 ordered ) 
+merge all
+body  ( at -6500 -13750 1357.23 ordinal 1 ordered )  copy reflect x
+body  ( at -6500 -13750 -1357.23 ordinal 1 ordered )  copy reflect x
+body  ( at -6500 -13750 1357.23 ordinal 1 ordered )  copy reflect y
+body  ( at 6500 -13750 1357.23 ordinal 1 ordered )  copy reflect y
+body  ( at -6500 -13750 -1357.23 ordinal 1 ordered )  copy reflect y
+body  ( at 6500 -13750 -1357.23 ordinal 1 ordered )  copy reflect y
+create volume surface  ( at -6538.69 -13768.2 1590.68 ordinal 1 at -6538.69 -13768.2 -1590.68 ordinal 1 at 6538.69 -13768.2 1590.68 ordinal 1 at 6538.69 -13768.2 -1590.68 ordinal 1 at -6538.69 13768.2 1590.68 ordinal 1 at 6538.69 13768.2 1590.68 ordinal 1 at -6538.69 13768.2 -1590.68 ordinal 1 at 6538.69 13768.2 -1590.68 ordinal 1 ordered )  heal
+delete vertex  ( at 0 0 0 ordinal 1 ordered ) 
+delete curve  ( at 0 0 0 ordinal 1 ordered ) 
+compress all
+merge all
+#rotate CR for perpendicular CR mesh
+#Rotate volume 2 about Z angle 90
+# Move to CR depth
+volume  ( at 0 0 0 ordinal 1 ordered )  move x 0 y 0 z {-CR_depth}
+create brick x {sizeX} y {sizeY} z {sizeZ}
+volume  ( at 0 0 0 ordinal 1 ordered )  move x 0 y 0 z {-0.5*sizeZ}
+# make a hole in the domain where the CR is
+subtract volume  ( at 0 0 -6500 ordinal 1 ordered )  from  ( at 0 0 -100000 ordinal 1 ordered ) 
+# remake the CR and put it back in the hole
+volume  ( at 0 0 -7875 ordinal 1 ordered )  move x 0 y 0 z {-5*sizeZ}
+volume  ( at 0 0 -100000 ordinal 1 ordered )  move x 0 y 0 z {-5*sizeZ}
+create vertex 0 0 0
+create vertex 0 -27500 0
+create vertex 0 0 -2500
+create vertex -13000 0 0
+curve  ( at 0 -13931.2 -2155.47 ordinal 1 ordered )  copy reflect z
+curve  ( at -6794.25 0 -2131.39 ordinal 1 ordered )  copy reflect z
+create curve vertex  ( at 0 0 -2500 ordinal 1 at 0 0 2500 ordinal 1 ordered ) 
+create surface curve  ( at 0 -13931.2 2155.47 ordinal 1 at -6794.25 0 2131.39 ordinal 1 at -10519.6 -16157 0 ordinal 1 ordered ) 
+create surface curve  ( at 0 -13931.2 -2155.47 ordinal 1 at -6794.25 0 -2131.39 ordinal 1 at -10519.6 -16157 0 ordinal 1 ordered ) 
+merge all
+body  ( at -6500 -13750 1357.23 ordinal 1 ordered )  copy reflect x
+body  ( at -6500 -13750 -1357.23 ordinal 1 ordered )  copy reflect x
+body  ( at -6500 -13750 1357.23 ordinal 1 ordered )  copy reflect y
+body  ( at 6500 -13750 1357.23 ordinal 1 ordered )  copy reflect y
+body  ( at -6500 -13750 -1357.23 ordinal 1 ordered )  copy reflect y
+body  ( at 6500 -13750 -1357.23 ordinal 1 ordered )  copy reflect y
+create volume surface  ( at -6538.69 -13768.2 1590.68 ordinal 1 at -6538.69 -13768.2 -1590.68 ordinal 1 at 6538.69 -13768.2 1590.68 ordinal 1 at 6538.69 -13768.2 -1590.68 ordinal 1 at -6538.69 13768.2 1590.68 ordinal 1 at 6538.69 13768.2 1590.68 ordinal 1 at -6538.69 13768.2 -1590.68 ordinal 1 at 6538.69 13768.2 -1590.68 ordinal 1 ordered )  heal
+delete vertex  ( at 0 0 0 ordinal 1 ordered ) 
+delete curve  ( at 0 0 0 ordinal 1 ordered ) 
+compress all
+merge all
+#Rotate CR for perpendicular case
+#Rotate volume 3 about Z angle 90
+#move other volumes back
+volume  ( at 0 0 -1.00788e+06 ordinal 1 ordered )  move x 0 y 0 z {5*sizeZ}
+volume  ( at 0 0 -1.1e+06 ordinal 1 ordered )  move x 0 y 0 z {5*sizeZ}
+volume  ( at 0 0 0 ordinal 1 ordered )  move x 0 y 0 z {-CR_depth}
+compress all
+merge all
+#cut domain into layers
+webcut volume  ( at 0 0 -100000 ordinal 1 ordered )  with plane zplane offset {-upperCrustHeight}
+webcut volume  ( at 0 0 -105000 ordinal 1 ordered )  with plane zplane offset {-upperCrustHeight-lowerCrustHeight}
+webcut volume  ( at 0 0 -115000 ordinal 1 ordered )  with plane zplane offset {-upperCrustHeight-lowerCrustHeight-lithosphericMantleHeight}
+compress all
+merge all
+#------------------------------------------------------------------------------
+# Subtract the volumes to make the chamber hollow
+#------------------------------------------------------------------------------
+subtract volume  ( at 0 0 -7875 ordinal 1 ordered )  from volume  ( at 0 0 -6500 ordinal 1 ordered ) 
+merge all
+compress all
+# ----------------------------------------------------------------------
+# Set discretization size and  scheme
+# ----------------------------------------------------------------------
+surface all scheme trimesh
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Smooth mesh to improve quality
+# ----------------------------------------------------------------------
+surface all smooth scheme condition number beta 1.4 cpu 10
+smooth surface all
+# ----------------------------------------------------------------------
+# Mark entities for boundary conditions, etc.
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Export exodus file
+# ----------------------------------------------------------------------
+# Cubit journal file with geometry for magma reservoir example.
+${Units('si')}
+# Clear model
+undo off
+reset
+# Turn on IDless journal files for maximum compatibility.
+# The commands echoed to the log will replace the object ID with a
+# geometric specification of the object. Note that this means changing
+# the geometry will require changes to subsequent journal commands.
+# Define variables for geometry.
+# Domain
+${length = 20*km}
+${depth  = 20*km}
+${pay = 0.1*km}
+# Magma reservoir
+${major = 5*km}
+${minor  = 1*km}
+# Magma conduit
+${c_length = 1*km}
+${c_depth = 6*km}
+# Domain
+create surface rectangle width {length} height {depth} zplane
+surface {Id("surface")}  move x {length/2} y {depth/-2} z 0
+surface {Id("surface")}  name "domain"
+# reservoir
+create surface ellipse major radius {major} minor radius {minor} on domain
+surface {Id("surface")}  move x {length/2} y {-depth*(2/3)} z 0
+surface {Id("surface")}  name "mirror_reservoir"
+# Conduit
+create surface rectangle width {c_length} height {c_depth} on domain
+surface {Id("surface")}  move x {length/2} y {-depth + c_depth/2} z 0
+surface {Id("surface")}  name "mirror_conduit"
+unite volume  ( at 10000 -13333.3 0 ordinal 1 at 10000 -17000 0 ordinal 1 ordered ) 
+imprint all
+merge all
+delete body  ( at 10000 -16166.7 0 ordinal 1 ordered ) 
+#surface 4 rename "reservoir"
+surface ( at 10000 -16166.7 0 ordinal 1 ordered ) rename "reservoir"
+#surface 5 rename "domain"
+surface ( at 10000 -10000 0 ordinal 1 ordered ) rename "domain"
+#curve 8 name "inflow"
+curve ( at 10000 -20000 0 ordinal 1 ordered ) name "inflow"
+#curve 10 name "west_conduit"
+curve ( at 9500 -17164.2 0 ordinal 1 ordered ) name "west_conduit"
+#curve 11 name "reservoir_interface"
+#curve 12 name "east_conduit"
+# Cubit Journal file for generating mesh with triangular cells.
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+reset
+undo off
+cd "/home/grantblock/Research/Yellowstone/Mesh/uniform_CR/run6"
+# ----------------------------------------------------------------------
+# Set units to SI
+# ----------------------------------------------------------------------
+${Units('si')}
+# ----------------------------------------------------------------------
+# Set  geometry parameters
+# ----------------------------------------------------------------------
+${CR_depth=6.5*km}
+${source_depth=7.875*km}
+#source and CR parameters
+${CR_x_rad = 13.0*km}
+${CR_y_rad = 27.5*km}
+${CR_z_rad = 2.5*km}
+${source_x_rad=0.25*CR_x_rad}
+${source_y_rad=0.25*CR_y_rad}
+${source_z_rad=0.25*CR_z_rad}
+# Domain size parameters
+${sizeX=300.0*km}
+${sizeY=300.0*km}
+${sizeZ=200.0*km}
+${upperCrustHeight=10*km}
+${lowerCrustHeight=20*km}
+${lithosphericMantleHeight=70*km}
+${asthenosphereHeight=100*km}
+#------------------------------------------------------------------------
+# Create ellipsoidal magma chamber
+#------------------------------------------------------------------------
+create vertex 0 0 0
+create vertex 0 -6875 0
+create vertex 0 0 -625
+create vertex -3250 0 0
+curve  ( at 0 -3482.81 -538.867 ordinal 1 ordered )  copy reflect z
+curve  ( at -1698.56 0 -532.848 ordinal 1 ordered )  copy reflect z
+create curve vertex  ( at 0 0 -625 ordinal 1 at 0 0 625 ordinal 1 ordered ) 
+create surface curve  ( at 0 -3482.81 538.867 ordinal 1 at -1698.56 0 532.848 ordinal 1 at -2629.91 -4039.26 0 ordinal 1 ordered ) 
+create surface curve  ( at 0 -3482.81 -538.867 ordinal 1 at -1698.56 0 -532.848 ordinal 1 at -2629.91 -4039.26 0 ordinal 1 ordered ) 
+merge all
+body  ( at -348.843 -737.937 312.643 ordinal 1 ordered )  copy reflect x
+body  ( at -348.843 -737.937 -312.643 ordinal 1 ordered )  copy reflect x
+body  ( at -348.843 -737.937 312.643 ordinal 1 ordered )  copy reflect y
+body  ( at 348.843 -737.937 312.643 ordinal 1 ordered )  copy reflect y
+body  ( at -348.843 -737.937 -312.643 ordinal 1 ordered )  copy reflect y
+body  ( at 348.843 -737.937 -312.643 ordinal 1 ordered )  copy reflect y
+create volume surface  ( at -355.486 -741.034 617.444 ordinal 1 at -355.486 -741.034 -617.444 ordinal 1 at 355.486 -741.034 617.444 ordinal 1 at 355.486 -741.034 -617.444 ordinal 1 at -355.486 741.034 617.444 ordinal 1 at 355.486 741.034 617.444 ordinal 1 at -355.486 741.034 -617.444 ordinal 1 at 355.486 741.034 -617.444 ordinal 1 ordered )  heal
+delete vertex  ( at 0 0 0 ordinal 1 ordered ) 
+delete curve  ( at 0 0 0 ordinal 1 ordered ) 
+compress all
+# Move to the SMB depth
+volume  ( at 0 0 0 ordinal 1 ordered )  move x 0 y 0 z {-source_depth}
+#----------------------------------------------------------------------------
+# Create the domain, a block with a large ellipsoidal
+# CR
+#----------------------------------------------------------------------------
+# create the CR ellipsoid
+create vertex 0 0 0
+create vertex 0 -27500 0
+create vertex 0 0 -2500
+create vertex -13000 0 0
+curve  ( at 0 -13931.2 -2155.47 ordinal 1 ordered )  copy reflect z
+curve  ( at -6794.25 0 -2131.39 ordinal 1 ordered )  copy reflect z
+create curve vertex  ( at 0 0 -2500 ordinal 1 at 0 0 2500 ordinal 1 ordered ) 
+create surface curve  ( at 0 -13931.2 2155.47 ordinal 1 at -6794.25 0 2131.39 ordinal 1 at -10519.6 -16157 0 ordinal 1 ordered ) 
+create surface curve  ( at 0 -13931.2 -2155.47 ordinal 1 at -6794.25 0 -2131.39 ordinal 1 at -10519.6 -16157 0 ordinal 1 ordered ) 
+merge all
+body  ( at -6500 -13750 1357.23 ordinal 1 ordered )  copy reflect x
+body  ( at -6500 -13750 -1357.23 ordinal 1 ordered )  copy reflect x
+body  ( at -6500 -13750 1357.23 ordinal 1 ordered )  copy reflect y
+body  ( at 6500 -13750 1357.23 ordinal 1 ordered )  copy reflect y
+body  ( at -6500 -13750 -1357.23 ordinal 1 ordered )  copy reflect y
+body  ( at 6500 -13750 -1357.23 ordinal 1 ordered )  copy reflect y
+create volume surface  ( at -6538.69 -13768.2 1590.68 ordinal 1 at -6538.69 -13768.2 -1590.68 ordinal 1 at 6538.69 -13768.2 1590.68 ordinal 1 at 6538.69 -13768.2 -1590.68 ordinal 1 at -6538.69 13768.2 1590.68 ordinal 1 at 6538.69 13768.2 1590.68 ordinal 1 at -6538.69 13768.2 -1590.68 ordinal 1 at 6538.69 13768.2 -1590.68 ordinal 1 ordered )  heal
+delete vertex  ( at 0 0 0 ordinal 1 ordered ) 
+delete curve  ( at 0 0 0 ordinal 1 ordered ) 
+compress all
+merge all
+#rotate CR for perpendicular CR mesh
+#Rotate volume 2 about Z angle 90
+# Move to CR depth
+volume  ( at 0 0 0 ordinal 1 ordered )  move x 0 y 0 z {-CR_depth}
+create brick x {sizeX} y {sizeY} z {sizeZ}
+volume  ( at 0 0 0 ordinal 1 ordered )  move x 0 y 0 z {-0.5*sizeZ}
+# make a hole in the domain where the CR is
+subtract volume  ( at 0 0 -6500 ordinal 1 ordered )  from  ( at 0 0 -100000 ordinal 1 ordered ) 
+# remake the CR and put it back in the hole
+volume  ( at 0 0 -7875 ordinal 1 ordered )  move x 0 y 0 z {-5*sizeZ}
+volume  ( at 0 0 -100000 ordinal 1 ordered )  move x 0 y 0 z {-5*sizeZ}
+create vertex 0 0 0
+create vertex 0 -27500 0
+create vertex 0 0 -2500
+create vertex -13000 0 0
+curve  ( at 0 -13931.2 -2155.47 ordinal 1 ordered )  copy reflect z
+curve  ( at -6794.25 0 -2131.39 ordinal 1 ordered )  copy reflect z
+create curve vertex  ( at 0 0 -2500 ordinal 1 at 0 0 2500 ordinal 1 ordered ) 
+create surface curve  ( at 0 -13931.2 2155.47 ordinal 1 at -6794.25 0 2131.39 ordinal 1 at -10519.6 -16157 0 ordinal 1 ordered ) 
+create surface curve  ( at 0 -13931.2 -2155.47 ordinal 1 at -6794.25 0 -2131.39 ordinal 1 at -10519.6 -16157 0 ordinal 1 ordered ) 
+merge all
+body  ( at -6500 -13750 1357.23 ordinal 1 ordered )  copy reflect x
+body  ( at -6500 -13750 -1357.23 ordinal 1 ordered )  copy reflect x
+body  ( at -6500 -13750 1357.23 ordinal 1 ordered )  copy reflect y
+body  ( at 6500 -13750 1357.23 ordinal 1 ordered )  copy reflect y
+body  ( at -6500 -13750 -1357.23 ordinal 1 ordered )  copy reflect y
+body  ( at 6500 -13750 -1357.23 ordinal 1 ordered )  copy reflect y
+create volume surface  ( at -6538.69 -13768.2 1590.68 ordinal 1 at -6538.69 -13768.2 -1590.68 ordinal 1 at 6538.69 -13768.2 1590.68 ordinal 1 at 6538.69 -13768.2 -1590.68 ordinal 1 at -6538.69 13768.2 1590.68 ordinal 1 at 6538.69 13768.2 1590.68 ordinal 1 at -6538.69 13768.2 -1590.68 ordinal 1 at 6538.69 13768.2 -1590.68 ordinal 1 ordered )  heal
+delete vertex  ( at 0 0 0 ordinal 1 ordered ) 
+delete curve  ( at 0 0 0 ordinal 1 ordered ) 
+compress all
+merge all
+#Rotate CR for perpendicular case
+#Rotate volume 3 about Z angle 90
+#move other volumes back
+volume  ( at 0 0 -1.00788e+06 ordinal 1 ordered )  move x 0 y 0 z {5*sizeZ}
+volume  ( at 0 0 -1.1e+06 ordinal 1 ordered )  move x 0 y 0 z {5*sizeZ}
+volume  ( at 0 0 0 ordinal 1 ordered )  move x 0 y 0 z {-CR_depth}
+compress all
+merge all
+#cut domain into layers
+webcut volume  ( at 0 0 -100000 ordinal 1 ordered )  with plane zplane offset {-upperCrustHeight}
+webcut volume  ( at 0 0 -105000 ordinal 1 ordered )  with plane zplane offset {-upperCrustHeight-lowerCrustHeight}
+webcut volume  ( at 0 0 -115000 ordinal 1 ordered )  with plane zplane offset {-upperCrustHeight-lowerCrustHeight-lithosphericMantleHeight}
+compress all
+merge all
+#------------------------------------------------------------------------------
+# Subtract the volumes to make the chamber hollow
+#------------------------------------------------------------------------------
+subtract volume  ( at 0 0 -7875 ordinal 1 ordered )  from volume  ( at 0 0 -6500 ordinal 1 ordered ) 
+merge all
+compress all
+# ----------------------------------------------------------------------
+# Set discretization size and  scheme
+# ----------------------------------------------------------------------
+surface all scheme trimesh
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Smooth mesh to improve quality
+# ----------------------------------------------------------------------
+surface all smooth scheme condition number beta 1.4 cpu 10
+smooth surface all
+# ----------------------------------------------------------------------
+# Mark entities for boundary conditions, etc.
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Export exodus file
+# ----------------------------------------------------------------------
+# Cubit journal file with geometry for magma reservoir example.
+${Units('si')}
+# Clear model
+undo off
+reset
+# Turn on IDless journal files for maximum compatibility.
+# The commands echoed to the log will replace the object ID with a
+# geometric specification of the object. Note that this means changing
+# the geometry will require changes to subsequent journal commands.
+# Define variables for geometry.
+# Domain
+${length = 20*km}
+${depth  = 20*km}
+${pay = 0.1*km}
+# Magma reservoir
+${major = 5*km}
+${minor  = 1*km}
+# Magma conduit
+${c_length = 1*km}
+${c_depth = 6*km}
+# Domain
+create surface rectangle width {length} height {depth} zplane
+surface {Id("surface")}  move x {length/2} y {depth/-2} z 0
+surface {Id("surface")}  name "domain"
+# reservoir
+create surface ellipse major radius {major} minor radius {minor} on domain
+surface {Id("surface")}  move x {length/2} y {-depth*(2/3)} z 0
+surface {Id("surface")}  name "mirror_reservoir"
+# Conduit
+create surface rectangle width {c_length} height {c_depth} on domain
+surface {Id("surface")}  move x {length/2} y {-depth + c_depth/2} z 0
+surface {Id("surface")}  name "mirror_conduit"
+unite volume  ( at 10000 -13333.3 0 ordinal 1 at 10000 -17000 0 ordinal 1 ordered ) 
+imprint all
+merge all
+delete body  ( at 10000 -16166.7 0 ordinal 1 ordered ) 
+#surface 4 rename "reservoir"
+surface ( at 10000 -16166.7 0 ordinal 1 ordered ) rename "reservoir"
+#surface 5 rename "domain"
+surface ( at 10000 -10000 0 ordinal 1 ordered ) rename "domain"
+#curve 8 name "inflow"
+curve ( at 10000 -20000 0 ordinal 1 ordered ) name "inflow"
+#curve 10 name "west_conduit"
+curve ( at 9500 -17164.2 0 ordinal 1 ordered ) name "west_conduit"
+#curve 11 name "reservoir_interface"
+#curve 12 name "east_conduit"
+# ----------------------------------------------------------------------
+# Set discretization size and  scheme
+# ----------------------------------------------------------------------
+surface all scheme trimesh
+surface domain size 1000
+surface reservoir size 500
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+mesh reservoir
+mesh domain
+# ----------------------------------------------------------------------
+# Smooth mesh to improve quality
+# ----------------------------------------------------------------------
+surface all smooth scheme condition number beta 1.4 cpu 10
+smooth surface all
+# CUBIT journal file for creating blocks and nodesets associated with
+# materials and boundary conditions.
+# ----------------------------------------------------------------------
+# Create blocks for materials
+# ----------------------------------------------------------------------
+block 1 domain
+block  ( at 10000 -10000 0 ordinal 1 ordered )  name "crust"
+block 2 reservoir
+block  ( at 10000 -16166.7 0 ordinal 1 ordered )  name "reservoir"
+# ----------------------------------------------------------------------
+# Create nodeset for boundaries
+# ----------------------------------------------------------------------
+group "boundary_xneg" add node in curve  ( at 0 -10000 0 ordinal 1 ordered ) 
+nodeset 20 boundary_xneg
+nodeset  ( at 0 -10000 0 ordinal 1 ordered )  name "boundary_xneg"
+group "boundary_xpos" add node in curve  ( at 20000 -10000 0 ordinal 1 ordered ) 
+nodeset 21 boundary_xpos
+nodeset  ( at 20000 -10000 0 ordinal 1 ordered )  name "boundary_xpos"
+group "boundary_yneg" add node in curve  ( at 10000 -20000 0 ordinal 1 at 15250 -20000 0 ordinal 1 at 4750 -20000 0 ordinal 1 ordered ) 
+nodeset 22 boundary_yneg
+nodeset  ( at 10000 -20000 0 ordinal 1 ordered )  name "boundary_yneg"
+group "boundary_ypos" add node in curve  ( at 10000 0 0 ordinal 1 ordered ) 
+nodeset 23 boundary_ypos
+nodeset  ( at 10000 0 0 ordinal 1 ordered )  name "boundary_ypos"
+group "boundary_flow" add node in inflow
+nodeset 24 boundary_flow
+nodeset  ( at 10000 -20000 0 ordinal 2 ordered )  name "boundary_flow"
+create surface rectangle width {length} height {depth} zplane
+surface {Id("surface")}  move x {length/2} y {depth/-2} z 0
+surface {Id("surface")}  name "domain"
+clear usermodified all
+# Cubit journal file with geometry for magma reservoir example.
+${Units('si')}
+# Clear model
+undo off
+reset
+# Turn on IDless journal files for maximum compatibility.
+# The commands echoed to the log will replace the object ID with a
+# geometric specification of the object. Note that this means changing
+# the geometry will require changes to subsequent journal commands.
+# Define variables for geometry.
+# Domain
+${length = 20*km}
+${depth  = 20*km}
+${pay = 0.1*km}
+# Magma reservoir
+${major = 5*km}
+${minor  = 1*km}
+# Magma conduit
+${c_length = 1*km}
+${c_depth = 6*km}
+# Domain
+create surface rectangle width {length} height {depth} zplane
+surface {Id("surface")}  move x {length/2} y {depth/-2} z 0
+surface {Id("surface")}  name "domain"
+list surface  ( at 10000 -10000 0 ordinal 1 ordered )  geometry
+# Cubit journal file with geometry for magma reservoir example.
+${Units('si')}
+# Clear model
+undo off
+reset
+# Turn on IDless journal files for maximum compatibility.
+# The commands echoed to the log will replace the object ID with a
+# geometric specification of the object. Note that this means changing
+# the geometry will require changes to subsequent journal commands.
+# Define variables for geometry.
+# Domain
+${length = 20*km}
+${depth  = 20*km}
+${pay = 0.1*km}
+# Magma reservoir
+${major = 5*km}
+${minor  = 1*km}
+# Magma conduit
+${c_length = 1*km}
+${c_depth = 6*km}
+# Domain
+create surface rectangle width {length} height {depth} zplane
+surface {Id("surface")}  move x {length/2} y {depth/-2} z 0
+surface {Id("surface")}  name "domain"
+# reservoir
+create surface ellipse major radius {major} minor radius {minor} on domain
+surface {Id("surface")}  move x {length/2} y {-depth*(2/3)} z 0
+surface {Id("surface")}  name "mirror_reservoir"
+# Conduit
+create surface rectangle width {c_length} height {c_depth} on domain
+surface {Id("surface")}  move x {length/2} y {-depth + c_depth/2} z 0
+surface {Id("surface")}  name "mirror_conduit"
+unite volume  ( at 10000 -13333.3 0 ordinal 1 at 10000 -17000 0 ordinal 1 ordered ) 
+imprint all
+merge all
+delete body  ( at 10000 -16166.7 0 ordinal 1 ordered ) 
+#surface 4 rename "reservoir"
+surface ( at 10000 -16166.7 0 ordinal 1 ordered ) rename "reservoir"
+#surface 5 rename "domain"
+surface ( at 10000 -10000 0 ordinal 1 ordered ) rename "domain"
+#curve 8 name "inflow"
+curve ( at 10000 -20000 0 ordinal 1 ordered ) name "inflow"
+#curve 10 name "west_conduit"
+curve ( at 9500 -17164.2 0 ordinal 1 ordered ) name "west_conduit"
+#curve 11 name "reservoir_interface"
+#curve 12 name "east_conduit"
+# Cubit journal file with geometry for magma reservoir example.
+${Units('si')}
+# Clear model
+undo off
+reset
+# Turn on IDless journal files for maximum compatibility.
+# The commands echoed to the log will replace the object ID with a
+# geometric specification of the object. Note that this means changing
+# the geometry will require changes to subsequent journal commands.
+# Define variables for geometry.
+# Domain
+${length = 20*km}
+${depth  = 20*km}
+${pay = 0.1*km}
+# Magma reservoir
+${major = 5*km}
+${minor  = 1*km}
+# Magma conduit
+${c_length = 1*km}
+${c_depth = 6*km}
+# Domain
+create surface rectangle width {length} height {depth} zplane
+surface {Id("surface")}  move x {length/2} y {depth/-2} z 0
+surface {Id("surface")}  name "domain"
+# reservoir
+create surface ellipse major radius {major} minor radius {minor} on domain
+surface {Id("surface")}  move x {length/2} y {-depth*(2/3)} z 0
+surface {Id("surface")}  name "mirror_reservoir"
+# Conduit
+create surface rectangle width {c_length} height {c_depth} on domain
+surface {Id("surface")}  move x {length/2} y {-depth + c_depth/2} z 0
+surface {Id("surface")}  name "mirror_conduit"
+unite volume  ( at 10000 -13333.3 0 ordinal 1 at 10000 -17000 0 ordinal 1 ordered ) 
+imprint all
+merge all
+delete body  ( at 10000 -16166.7 0 ordinal 1 ordered ) 
+#surface 4 rename "reservoir"
+surface ( at 10000 -16166.7 0 ordinal 1 ordered ) rename "reservoir"
+#surface 5 rename "domain"
+surface ( at 10000 -10000 0 ordinal 1 ordered ) rename "domain"
+#curve 8 name "inflow"
+curve ( at 10000 -20000 0 ordinal 1 ordered ) name "inflow"
+#curve 10 name "west_conduit"
+curve ( at 9500 -17164.2 0 ordinal 1 ordered ) name "west_conduit"
+#curve 11 name "reservoir_interface"
+#curve 12 name "east_conduit"
+# ----------------------------------------------------------------------
+# Set discretization size and  scheme
+# ----------------------------------------------------------------------
+surface all scheme trimesh
+surface domain size 1000
+surface reservoir size 500
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+mesh reservoir
+mesh domain
+# ----------------------------------------------------------------------
+# Smooth mesh to improve quality
+# ----------------------------------------------------------------------
+surface all smooth scheme condition number beta 1.4 cpu 10
+smooth surface all
+# CUBIT journal file for creating blocks and nodesets associated with
+# materials and boundary conditions.
+# ----------------------------------------------------------------------
+# Create blocks for materials
+# ----------------------------------------------------------------------
+block 1 domain
+block  ( at 10000 -10000 0 ordinal 1 ordered )  name "crust"
+block 2 reservoir
+block  ( at 10000 -16166.7 0 ordinal 1 ordered )  name "reservoir"
+# ----------------------------------------------------------------------
+# Create nodeset for boundaries
+# ----------------------------------------------------------------------
+group "boundary_xneg" add node in curve  ( at 0 -10000 0 ordinal 1 ordered ) 
+nodeset 20 boundary_xneg
+nodeset  ( at 0 -10000 0 ordinal 1 ordered )  name "boundary_xneg"
+group "boundary_xpos" add node in curve  ( at 20000 -10000 0 ordinal 1 ordered ) 
+nodeset 21 boundary_xpos
+nodeset  ( at 20000 -10000 0 ordinal 1 ordered )  name "boundary_xpos"
+group "boundary_yneg" add node in curve  ( at 10000 -20000 0 ordinal 1 at 15250 -20000 0 ordinal 1 at 4750 -20000 0 ordinal 1 ordered ) 
+nodeset 22 boundary_yneg
+nodeset  ( at 10000 -20000 0 ordinal 1 ordered )  name "boundary_yneg"
+group "boundary_ypos" add node in curve  ( at 10000 0 0 ordinal 1 ordered ) 
+nodeset 23 boundary_ypos
+nodeset  ( at 10000 0 0 ordinal 1 ordered )  name "boundary_ypos"
+group "boundary_flow" add node in inflow
+nodeset 24 boundary_flow
+nodeset  ( at 10000 -20000 0 ordinal 2 ordered )  name "boundary_flow"
