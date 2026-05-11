@@ -1,0 +1,81 @@
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+playback 'geometry.jou'
+
+#define cell sizes
+${maxCellSize=20.0*km}
+${minCellSize=1.0*km}
+# ----------------------------------------------------------------------
+# Create tet4 mesh with resolution dictated by 'cell_size_fn'.
+# ----------------------------------------------------------------------
+volume all scheme tetmesh
+import sizing function  "temp_mesh.exo" block all variable "cell_size_fn" time 0.0000000 
+
+surface 1 sizing function type exodus
+surface 2 size {maxCellSize}
+
+surface 11 sizing function type exodus
+surface 12  size {maxCellSize}
+surface 13  size {maxCellSize}
+surface 14  size {maxCellSize}
+surface 15  size {maxCellSize}
+
+surface 17  size {maxCellSize}
+surface 18 size {maxCellSize}
+surface 19 size {maxCellSize}
+surface 20 size {maxCellSize}
+
+surface 22  size {maxCellSize}
+surface 23  size {maxCellSize}
+surface 24  size {maxCellSize}
+surface 25 size {maxCellSize}
+surface 26 size {maxCellSize}
+surface 27 size {maxCellSize}
+surface 28 size {maxCellSize}
+surface 29 size {maxCellSize}
+
+surface 30 size {minCellSize}
+surface 31 size {minCellSize}
+surface 32 size {minCellSize}
+surface 33 size {minCellSize}
+surface 34 size {minCellSize}
+surface 35 size {minCellSize}
+surface 36 size {minCellSize}
+surface 37 size {minCellSize}
+
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+mesh surface all
+mesh volume all
+
+# ----------------------------------------------------------------------
+# Smooth mesh to improve quality
+# ----------------------------------------------------------------------
+volume all smooth scheme condition number beta 1.8 cpu 10
+surface all smooth scheme condition number beta 1.8 cpu 10
+
+smooth volume all
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
